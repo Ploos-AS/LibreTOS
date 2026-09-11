@@ -11,3 +11,33 @@ jobs:
       - uses: actions/checkout@v4
       - name: Qualify M0
         run: make qualify-m0
+
+  m1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Hatari runtime dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y hatari xvfb curl git make
+
+      - name: Cache m68k-elf toolchain
+        uses: actions/cache@v4
+        with:
+          path: .cache/m68k-elf
+          key: m68k-elf-b01d56c0f70dc594ca20e713190ee73d39075ce79ff2de972bb57b95b65e688a
+
+      - name: Qualify M1
+        run: make qualify-m1
+
+      - name: Upload M1 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: libretos-m1-evidence
+          path: |
+            build/m1/SHA256SUMS
+            build/m1/BUILDINFO.txt
+            build/m1/hatari.log
+          if-no-files-found: warn
