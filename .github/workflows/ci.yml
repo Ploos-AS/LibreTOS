@@ -17,16 +17,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Hatari runtime dependencies
+      - name: Install Atari/MiNT toolchain and Hatari
         run: |
+          sudo add-apt-repository -y ppa:vriviere/ppa
           sudo apt-get update
-          sudo apt-get install -y hatari xvfb curl git make
-
-      - name: Cache m68k-elf toolchain
-        uses: actions/cache@v4
-        with:
-          path: .cache/m68k-elf
-          key: m68k-elf-b01d56c0f70dc594ca20e713190ee73d39075ce79ff2de972bb57b95b65e688a
+          sudo apt-get install -y cross-mint-essential hatari xvfb git make
 
       - name: Qualify M1
         run: make qualify-m1
