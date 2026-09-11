@@ -11,7 +11,7 @@ SRC_DIR=${SRC_DIR:-"$ROOT/build/emutos"}
 OUT_DIR=${OUT_DIR:-"$ROOT/build/m1"}
 
 if [[ ! -x "$TOOLCHAIN_DIR/bin/m68k-elf-gcc" ]]; then
-    "$ROOT/tools/fetch_toolchain.sh"
+    bash "$ROOT/tools/fetch_toolchain.sh"
 fi
 
 rm -rf "$SRC_DIR" "$OUT_DIR"
