@@ -53,6 +53,33 @@ jobs:
             build/m4/mega-boot/
           if-no-files-found: warn
 
+  m4-platform:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Atari/MiNT toolchain and Hatari
+        run: |
+          sudo add-apt-repository -y ppa:vriviere/ppa
+          sudo apt-get update
+          sudo apt-get install -y cross-mint-essential hatari xvfb git make
+      - name: Qualify M4.3 Mega ST / Mega STe platform contracts
+        env:
+          HATARI_TIMEOUT_SECONDS: 60
+        run: make qualify-m4-platform
+      - name: Upload M4.3 Mega family platform evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: libretos-m4-mega-platform-evidence
+          path: |
+            build/m4/mega/LibreTOS-MegaST-68000-192k-us.img
+            build/m4/mega/LibreTOS-MegaSTe-68000-256k-us.img
+            build/m4/mega/SHA256SUMS
+            build/m4/mega/BUILDINFO.txt
+            build/m4/mega-platform/
+          if-no-files-found: warn
+
   m3-profile:
     runs-on: ubuntu-latest
     steps:
