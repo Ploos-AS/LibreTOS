@@ -1,54 +1,48 @@
-# M1 Qualification — Reproducible ST/68000 Baseline
+# M1 Qualification — Reproducible baseline + Hatari boot
 
-## Objective
+Status: **PASS (CI)**
 
-M1 proves that LibreTOS can obtain a fully redistributable, pinned TOS-compatible baseline, build a 68000 Atari ST ROM reproducibly, and boot-smoke-test that ROM in Hatari without any proprietary Atari ROM image.
+LibreTOS M1 establishes a reproducible free Atari ST / Motorola 68000 ROM baseline and verifies that the produced image boots under Hatari without requiring proprietary Atari ROM material.
 
-## Pinned inputs
+## Qualified baseline
 
-- EmuTOS repository: `https://github.com/emutos/emutos.git`
-- EmuTOS commit: `e0f0c2333d39a487e73d8b17f62b70a95441cd32`
-- Build mode: EmuTOS `ELF=1`, `UNIQUE=us`, target `192`
-- Toolchain archive SHA-256: `b01d56c0f70dc594ca20e713190ee73d39075ce79ff2de972bb57b95b65e688a`
+- Target: Atari ST
+- CPU: Motorola 68000
+- ROM size/profile: 192 KiB, US
+- Reference baseline: pinned EmuTOS commit from `config/upstream.env`
+- Toolchain: `m68k-atari-mint-gcc`
+- Emulator: Hatari
 
-The exact machine-readable pins live in `config/upstream.env`.
+## Qualification path
 
-## Target profile
-
-- Atari ST
-- Motorola 68000
-- 1 MiB ST-RAM for emulator qualification
-- 192 KiB ROM image
-- US single-country build
-- Hatari machine profile: `st`
-- Hatari CPU level: `0` (68000)
-
-## Qualification
-
-Run:
+The canonical command is:
 
 ```sh
 make qualify-m1
 ```
 
-This performs:
+This clones and checks out the exact pinned upstream commit, builds the 192 KiB US ROM, records SHA-256/build metadata, and boots it in Hatari using the ST/68000 profile. Qualification fails on Hatari startup failure or known fatal log markers.
 
-1. Verified download of the pinned 68000-safe `m68k-elf` toolchain.
-2. Fresh clone and detached checkout of the exact EmuTOS commit.
-3. `m68k-elf`/68000 build of a 192 KiB ROM.
-4. SHA-256 generation and build metadata capture.
-5. Hatari boot smoke test for 500 VBLs with original Atari TOS ROMs absent.
-6. Failure on non-zero Hatari exit or fatal ROM/emulation markers.
+## CI evidence
 
-## Artifacts
+GitHub Actions CI run **34598722883** for commit `6671e1e985cf2f624f3b38ab80fe9e3f516e0aaa` completed successfully on 2026-09-11.
 
-The local build writes:
+The workflow archives:
 
-- `build/m1/libretos-m1-st-us.img`
 - `build/m1/SHA256SUMS`
 - `build/m1/BUILDINFO.txt`
 - `build/m1/hatari.log`
 
-## Interpretation
+## M1 exit criteria
 
-Passing M1 establishes a reproducible and freely redistributable baseline suitable for LibreTOS development. It does **not** claim that the baseline is an independent LibreTOS implementation; at M1 it remains explicitly derived from the pinned EmuTOS upstream.
+- [x] audited/pinned upstream baseline
+- [x] cross-toolchain defined
+- [x] clean scripted build
+- [x] build hash and metadata recorded
+- [x] Atari ST / 68000 Hatari profile
+- [x] automated boot smoke test
+- [x] qualification evidence archived by CI
+
+## Scope
+
+M1 proves that the pinned free baseline can be built by the project workflow and reaches a successful Hatari boot smoke test. It does **not** yet claim broad TOS API compatibility or independence from the EmuTOS baseline. Those claims belong to M2 and later milestones.
