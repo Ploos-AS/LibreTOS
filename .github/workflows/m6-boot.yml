@@ -1,0 +1,32 @@
+name: M6 Boot
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  m6-boot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Atari/MiNT toolchain and Hatari
+        run: |
+          sudo add-apt-repository -y ppa:vriviere/ppa
+          sudo apt-get update
+          sudo apt-get install -y cross-mint-essential hatari xvfb git make
+      - name: Build and qualify M6.2 Atari Falcon030 boot
+        env:
+          HATARI_TIMEOUT_SECONDS: 60
+        run: make qualify-m6-boot
+      - name: Upload M6.2 Falcon030 evidence and ROM
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: libretos-m6-falcon030-boot-evidence
+          path: |
+            build/m6/falcon030/LibreTOS-Falcon030-68030-512k-us.img
+            build/m6/falcon030/SHA256SUMS
+            build/m6/falcon030/BUILDINFO.txt
+            build/m6/falcon030-boot/
+          if-no-files-found: warn
