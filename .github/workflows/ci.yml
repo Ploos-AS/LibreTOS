@@ -46,7 +46,7 @@ jobs:
         with:
           name: libretos-m3-ste-boot-evidence
           path: |
-            build/m3/ste/LibreTOS-STe-68000-192k-us.img
+            build/m3/ste/LibreTOS-STe-68000-256k-us.img
             build/m3/ste/SHA256SUMS
             build/m3/ste/BUILDINFO.txt
             build/m3/ste-boot/
