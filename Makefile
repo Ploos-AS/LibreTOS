@@ -1,4 +1,4 @@
-.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2 qualify-target-matrix qualify-m3-profile build-m3-ste qualify-m3-boot qualify-m3-platform qualify-m3-enhanced qualify-m3 qualify-m4-profiles build-m4-mega qualify-m4-boot qualify-m4-platform qualify-m4 qualify-m5-profile build-m5-tt030 qualify-m5-boot qualify-m5-platform qualify-m5-enhanced qualify-m5
+.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2 qualify-target-matrix qualify-m3-profile build-m3-ste qualify-m3-boot qualify-m3-platform qualify-m3-enhanced qualify-m3 qualify-m4-profiles build-m4-mega qualify-m4-boot qualify-m4-platform qualify-m4 qualify-m5-profile build-m5-tt030 qualify-m5-boot qualify-m5-platform qualify-m5-enhanced qualify-m5 qualify-m6-profile
 
 help:
 	@echo "LibreTOS"
@@ -31,8 +31,9 @@ help:
 	@echo "  make qualify-m5-platform - run M5.3 guest-side TT030 platform probe"
 	@echo "  make qualify-m5-enhanced - run M5.4 TT030 enhanced hardware/interface qualification"
 	@echo "  make qualify-m5         - run aggregate M5.5 Atari TT030 qualification"
+	@echo "  make qualify-m6-profile - verify canonical M6.1 Atari Falcon030/68030 profile"
 
-check: qualify-m0 qualify-m2-profile qualify-target-matrix qualify-m3-profile qualify-m4-profiles qualify-m5-profile
+check: qualify-m0 qualify-m2-profile qualify-target-matrix qualify-m3-profile qualify-m4-profiles qualify-m5-profile qualify-m6-profile
 
 qualify-m0:
 	@python3 tools/check_m0.py
@@ -117,3 +118,6 @@ qualify-m5-enhanced: qualify-m5-profile build-m5-tt030
 
 qualify-m5:
 	@python3 tools/qualify_m5.py
+
+qualify-m6-profile:
+	@python3 tools/check_m6_profile.py
