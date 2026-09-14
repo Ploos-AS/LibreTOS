@@ -1,4 +1,4 @@
-.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2 qualify-target-matrix
+.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2 qualify-target-matrix qualify-m3-profile
 
 help:
 	@echo "LibreTOS"
@@ -14,8 +14,9 @@ help:
 	@echo "  make qualify-m2-media   - run M2.5 floppy/media regression"
 	@echo "  make qualify-m2         - run aggregate M2.6 Atari ST qualification"
 	@echo "  make qualify-target-matrix - verify permanent Atari multi-target registry"
+	@echo "  make qualify-m3-profile - verify canonical M3.1 Atari STe/68000 profile"
 
-check: qualify-m0 qualify-m2-profile qualify-target-matrix
+check: qualify-m0 qualify-m2-profile qualify-target-matrix qualify-m3-profile
 
 qualify-m0:
 	@python3 tools/check_m0.py
@@ -49,3 +50,6 @@ qualify-m2:
 
 qualify-target-matrix:
 	@python3 tools/check_targets.py
+
+qualify-m3-profile:
+	@python3 tools/check_m3_profile.py
