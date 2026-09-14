@@ -11,7 +11,7 @@ The canonical target registry is `config/targets.json` and is checked by `tools/
 | Target | CPU | Milestone | Artifact | Status |
 | --- | --- | --- | --- | --- |
 | Atari ST | 68000 | M2 | `LibreTOS-ST-68000-192k-us.img` | qualified |
-| Atari STe | 68000 | M3 | `LibreTOS-STe-68000-192k-us.img` | planned |
+| Atari STe | 68000 | M3 | `LibreTOS-STe-68000-192k-us.img` | implemented |
 | Atari Mega ST | 68000 | M4 | `LibreTOS-MegaST-68000-192k-us.img` | planned |
 | Atari Mega STe | 68000 | M4 | `LibreTOS-MegaSTe-68000-192k-us.img` | planned |
 | Atari TT030 | 68030 | M5 | `LibreTOS-TT030-68030-512k-us.img` | planned |
@@ -22,3 +22,5 @@ ROM sizes for future, not-yet-qualified machines are part of the current target 
 ## Qualification rule
 
 A target may move through `planned` → `implemented` → `qualified`. A `qualified` target must have an existing canonical machine profile and remain present in CI regression coverage. M3 and later milestones therefore extend a matrix instead of advancing a single mutable machine definition.
+
+The Atari STe target now has its canonical M3.1 profile in `config/m3-ste-68000.json`. It remains `implemented`, not `qualified`, until the subsequent STe runtime/regression stages pass.
