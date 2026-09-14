@@ -1,0 +1,13 @@
+name: M6 Profile
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  m6-profile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Qualify M6.1 Atari Falcon030/68030 profile
+        run: make qualify-m6-profile
