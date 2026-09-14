@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "id": "mega-st-68000-4m-192k-us",
+  "milestone": "M4.1",
+  "machine": {
+    "family": "Atari Mega ST",
+    "representative_models": ["Mega ST 2", "Mega ST 4"],
+    "hatari_machine": "megast",
+    "cpu": "68000",
+    "cpu_level": 0,
+    "cpu_clock_mhz": 8,
+    "st_ram_kib": 4096,
+    "fast_ram_kib": 0
+  },
+  "rom": {
+    "size_kib": 192,
+    "country": "us",
+    "source": "pinned-free-baseline"
+  },
+  "display": {
+    "monitor": "color",
+    "initial_resolution": "st-low",
+    "palette_entries": 16,
+    "palette_color_space": 512
+  },
+  "platform_features": {
+    "blitter": true,
+    "real_time_clock": true,
+    "ste_enhanced_shifter": false,
+    "dma_sound": false,
+    "hardware_scrolling": false
+  },
+  "storage": {
+    "floppy_drives": 1,
+    "boot_device": "rom",
+    "hard_disk_required": false
+  },
+  "qualification": {
+    "emulator": "Hatari",
+    "compatible_mode": true,
+    "fast_boot": false,
+    "sound": false,
+    "minimum_vbls": 500,
+    "proprietary_atari_rom_required": false,
+    "must_regress": ["st-68000-1m-192k-us"]
+  }
+}
