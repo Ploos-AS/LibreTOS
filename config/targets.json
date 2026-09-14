@@ -55,7 +55,7 @@
       "id": "tt030-68030",
       "label": "Atari TT030",
       "milestone": "M5",
-      "status": "implemented",
+      "status": "qualified",
       "profile": "config/m5-tt030-68030.json",
       "cpu": "68030",
       "rom_kib": 512,
