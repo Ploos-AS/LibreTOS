@@ -15,7 +15,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent.parent
 PROFILE = ROOT / "config/m3-ste-68000.json"
-ROM = ROOT / "build/m3/ste/LibreTOS-STe-68000-192k-us.img"
+ROM = ROOT / "build/m3/ste/LibreTOS-STe-68000-256k-us.img"
 OUT = ROOT / "build/m3/ste-boot"
 LOG = OUT / "hatari.log"
 FATAL = re.compile(r"fatal|cannot load.*tos|invalid.*tos|bus error|address error", re.I)
@@ -34,7 +34,6 @@ def fail(message: str, rc: int = 1) -> int:
 
 
 def run_bounded(command: list[str]) -> tuple[int | None, bool]:
-    """Run Hatari in its own process group and guarantee bounded execution."""
     proc = subprocess.Popen(command, cwd=ROOT, start_new_session=True)
     try:
         return proc.wait(timeout=HATARI_TIMEOUT_SECONDS), False
@@ -67,6 +66,8 @@ def main() -> int:
         return fail("st_ram_kib must be an integer MiB for Hatari --memsize")
     if machine["hatari_machine"] != "ste":
         return fail("canonical STe profile must use Hatari machine 'ste'")
+    if int(profile["rom"]["size_kib"]) != 256:
+        return fail("canonical STe profile must use a 256 KiB ROM")
 
     args = [
         "hatari",
@@ -93,6 +94,7 @@ def main() -> int:
             "machine=ste",
             f"cpu_level={machine['cpu_level']}",
             f"memsize_mib={ram_kib // 1024}",
+            "rom_kib=256",
             f"compatible={yesno(bool(qualification['compatible_mode']))}",
             f"fast_boot={yesno(bool(qualification['fast_boot']))}",
             f"sound={'on' if qualification['sound'] else 'off'}",
