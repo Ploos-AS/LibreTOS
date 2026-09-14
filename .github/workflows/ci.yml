@@ -19,6 +19,13 @@ jobs:
       - name: Verify permanent Atari target matrix
         run: make qualify-target-matrix
 
+  m3-profile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Qualify M3.1 Atari STe/68000 profile
+        run: make qualify-m3-profile
+
   m2-profile:
     runs-on: ubuntu-latest
     steps:
