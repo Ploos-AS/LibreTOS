@@ -15,7 +15,7 @@ def main() -> None:
     p = json.loads(PROFILE.read_text(encoding="utf-8"))
     if p.get("schema") != 1:
         fail("schema must be 1")
-    if p.get("id") != "ste-68000-1m-192k-us":
+    if p.get("id") != "ste-68000-1m-256k-us":
         fail("unexpected profile id")
     m = p.get("machine", {})
     expected_machine = {
@@ -34,7 +34,7 @@ def main() -> None:
         fail("representative STe models mismatch")
 
     rom = p.get("rom", {})
-    if rom.get("size_kib") != 192 or rom.get("country") != "us":
+    if rom.get("size_kib") != 256 or rom.get("country") != "us":
         fail("ROM contract mismatch")
     if rom.get("source") != "pinned-free-baseline":
         fail("ROM must use free pinned baseline")
@@ -56,7 +56,9 @@ def main() -> None:
         fail("ste-68000 target missing from registry")
     if ste.get("profile") != "config/m3-ste-68000.json":
         fail("registry points to wrong STe profile")
-    if ste.get("artifact") != "LibreTOS-STe-68000-192k-us.img":
+    if ste.get("rom_kib") != 256:
+        fail("registry STe ROM size mismatch")
+    if ste.get("artifact") != "LibreTOS-STe-68000-256k-us.img":
         fail("registry STe artifact mismatch")
     if ste.get("status") not in {"implemented", "qualified"}:
         fail("STe target must be implemented or qualified")
