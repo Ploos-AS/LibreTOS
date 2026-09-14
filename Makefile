@@ -1,4 +1,4 @@
-.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot
+.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos
 
 help:
 	@echo "LibreTOS"
@@ -9,6 +9,7 @@ help:
 	@echo "  make qualify-m1         - build and boot-smoke-test M1 in Hatari"
 	@echo "  make qualify-m2-profile - verify canonical M2 ST/68000 profile"
 	@echo "  make qualify-m2-boot    - run M2.2 profile-driven Hatari boot regression"
+	@echo "  make qualify-m2-gemdos  - run M2.3 guest-side GEMDOS regression"
 
 check: qualify-m0 qualify-m2-profile
 
@@ -29,3 +30,6 @@ qualify-m2-profile:
 
 qualify-m2-boot: qualify-m2-profile build-m1
 	@python3 tools/qualify_m2_boot.py
+
+qualify-m2-gemdos: qualify-m2-profile build-m1
+	@python3 tools/qualify_m2_gemdos.py

@@ -23,16 +23,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Install Atari/MiNT toolchain and Hatari
         run: |
           sudo add-apt-repository -y ppa:vriviere/ppa
           sudo apt-get update
           sudo apt-get install -y cross-mint-essential hatari xvfb git make
-
       - name: Qualify M1
         run: make qualify-m1
-
       - name: Upload M1 evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -48,25 +45,42 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Install Atari/MiNT toolchain and Hatari
         run: |
           sudo add-apt-repository -y ppa:vriviere/ppa
           sudo apt-get update
           sudo apt-get install -y cross-mint-essential hatari xvfb git make
-
       - name: Qualify M2.2 boot regression
         run: make qualify-m2-boot
-
       - name: Upload M2.2 evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: libretos-m2-boot-evidence
+          path: build/m2/boot/
+          if-no-files-found: warn
+
+  m2-gemdos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Atari/MiNT toolchain and Hatari
+        run: |
+          sudo add-apt-repository -y ppa:vriviere/ppa
+          sudo apt-get update
+          sudo apt-get install -y cross-mint-essential hatari xvfb git make
+      - name: Qualify M2.3 GEMDOS regression
+        run: make qualify-m2-gemdos
+      - name: Upload M2.3 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: libretos-m2-gemdos-evidence
           path: |
-            build/m2/boot/PROFILE.json
-            build/m2/boot/ROM.sha256
-            build/m2/boot/HATARI_PROFILE.txt
-            build/m2/boot/RESULT.txt
-            build/m2/boot/hatari.log
+            build/m2/gemdos/PROFILE.json
+            build/m2/gemdos/ROM.sha256
+            build/m2/gemdos/PROBE.sha256
+            build/m2/gemdos/HATARI_PROFILE.json
+            build/m2/gemdos/RESULT.txt
+            build/m2/gemdos/hatari.log
           if-no-files-found: warn
