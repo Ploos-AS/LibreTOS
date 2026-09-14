@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "id": "ste-68000-1m-192k-us",
+  "id": "ste-68000-1m-256k-us",
   "milestone": "M3.1",
   "machine": {
     "family": "Atari STe",
@@ -13,7 +13,7 @@
     "fast_ram_kib": 0
   },
   "rom": {
-    "size_kib": 192,
+    "size_kib": 256,
     "country": "us",
     "source": "pinned-free-baseline"
   },
