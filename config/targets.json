@@ -22,7 +22,7 @@
       "id": "ste-68000",
       "label": "Atari STe",
       "milestone": "M3",
-      "status": "planned",
+      "status": "implemented",
       "profile": "config/m3-ste-68000.json",
       "cpu": "68000",
       "rom_kib": 192,
