@@ -34,10 +34,32 @@ static void vdi_trap(struct VDIPB *pb)
     __asm__ volatile("trap #2" : "+d"(d0), "+d"(d1) : : "memory", "cc");
 }
 
+static void append_long(char *buffer, long value)
+{
+    char tmp[16];
+    char *p = tmp + sizeof(tmp);
+    unsigned long magnitude;
+    int negative = value < 0;
+
+    *--p = '\0';
+    if (negative)
+        magnitude = 0UL - (unsigned long)value;
+    else
+        magnitude = (unsigned long)value;
+
+    do {
+        *--p = (char)('0' + (magnitude % 10UL));
+        magnitude /= 10UL;
+    } while (magnitude != 0UL);
+
+    if (negative)
+        *--p = '-';
+    strcat(buffer, p);
+}
+
 static void write_result(const char *status, const char *stage, int app_id, int phys_handle, int vdi_handle)
 {
     char buffer[512];
-    char num[16];
     long handle;
     long length;
 
@@ -49,14 +71,11 @@ static void write_result(const char *status, const char *stage, int app_id, int 
     strcat(buffer, "\r\ntests=appl_init,graf_handle,v_opnvwk,v_pline,v_clsvwk,appl_exit\r\n");
 
     strcat(buffer, "aes_app_id=");
-    ltoa((long)app_id, num, 10);
-    strcat(buffer, num);
+    append_long(buffer, (long)app_id);
     strcat(buffer, "\r\nphys_handle=");
-    ltoa((long)phys_handle, num, 10);
-    strcat(buffer, num);
+    append_long(buffer, (long)phys_handle);
     strcat(buffer, "\r\nvdi_handle=");
-    ltoa((long)vdi_handle, num, 10);
-    strcat(buffer, num);
+    append_long(buffer, (long)vdi_handle);
     strcat(buffer, "\r\n");
 
     handle = Fcreate(RESULT_FILE, 0);
