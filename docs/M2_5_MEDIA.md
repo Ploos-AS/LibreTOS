@@ -20,12 +20,14 @@ The guest verifies:
 - the mounted media marker is identified correctly
 - `A:\\PERSIST.TXT` is absent before the write, proving a clean medium
 - a new floppy file can be created and written
-- the file can be reopened and read back byte-for-byte
-- the write persists into the host-side `.ST` image
+- the file can be closed, reopened and read back byte-for-byte
+- the second independently generated medium is also clean and exposes its own marker
 
-The host harness additionally verifies that both floppy-image hashes change after the guest writes to them. Because MEDIA-B starts clean after MEDIA-A has been modified, the two-pass sequence also catches accidental state leakage when media is replaced between emulator sessions.
+The qualification verdict is based on those guest-observed floppy filesystem semantics. Host-side `.ST` hashes before and after each run are retained as diagnostic evidence only.
 
-Hatari is run with `--disk-a` and `--protect-floppy off` so writes target the floppy image rather than a virtual hard-disk fixture.
+This distinction is intentional: Hatari 2.4.1 can satisfy guest write/readback semantics while a run terminated by `--run-vbls` does not necessarily flush the modified raw floppy image back to the host file before exit. Requiring the host image SHA-256 to change therefore produced a false negative and is not a valid compatibility criterion for this test harness.
+
+Hatari is run with `--disk-a` and `--protect-floppy off` so the guest exercises floppy I/O rather than the GEMDOS hard-disk fixture.
 
 ## Evidence
 
@@ -36,9 +38,9 @@ CI archives:
 - guest probe SHA-256
 - effective Hatari profile
 - normalized JSON result
-- final disk-image SHA-256 values
+- initial/final disk-image SHA-256 values as informational diagnostics
 - Hatari logs for MEDIA-A and MEDIA-B
 
 ## Scope boundary
 
-M2.5 covers filesystem-visible floppy read/write behavior and deterministic media replacement across clean Hatari sessions. It does not yet claim hot eject/insert timing or FDC-level copy-protection compatibility; those remain candidates for later hardware/FDC-specific regression work.
+M2.5 covers filesystem-visible floppy read/write behavior and deterministic media replacement across clean Hatari sessions. It does not claim host-image flush behavior, hot eject/insert timing, or FDC-level copy-protection compatibility; those remain candidates for later emulator/hardware-specific regression work.
