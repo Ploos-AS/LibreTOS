@@ -1,0 +1,13 @@
+name: M5 Profile
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  m5-profile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Qualify M5.1 Atari TT030/68030 profile
+        run: make qualify-m5-profile
