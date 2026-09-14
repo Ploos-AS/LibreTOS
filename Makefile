@@ -1,4 +1,4 @@
-.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2 qualify-target-matrix qualify-m3-profile build-m3-ste qualify-m3-boot qualify-m3-platform qualify-m3-enhanced qualify-m3
+.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2 qualify-target-matrix qualify-m3-profile build-m3-ste qualify-m3-boot qualify-m3-platform qualify-m3-enhanced qualify-m3 qualify-m4-profiles
 
 help:
 	@echo "LibreTOS"
@@ -20,8 +20,9 @@ help:
 	@echo "  make qualify-m3-platform - run M3.3 guest-side STe platform/XBIOS probe"
 	@echo "  make qualify-m3-enhanced - run M3.4 STe enhanced-hardware regression"
 	@echo "  make qualify-m3         - run aggregate M3.5 Atari STe qualification"
+	@echo "  make qualify-m4-profiles - verify canonical Mega ST / Mega STe profiles"
 
-check: qualify-m0 qualify-m2-profile qualify-target-matrix qualify-m3-profile
+check: qualify-m0 qualify-m2-profile qualify-target-matrix qualify-m3-profile qualify-m4-profiles
 
 qualify-m0:
 	@python3 tools/check_m0.py
@@ -73,3 +74,6 @@ qualify-m3-enhanced: qualify-m3-profile build-m3-ste
 
 qualify-m3:
 	@python3 tools/qualify_m3.py
+
+qualify-m4-profiles:
+	@python3 tools/check_m4_profiles.py
