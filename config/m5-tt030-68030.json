@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "id": "tt030-68030-4m-16mtt-512k-us",
+  "milestone": "M5.1",
+  "machine": {
+    "family": "Atari TT030",
+    "representative_models": ["TT030"],
+    "hatari_machine": "tt",
+    "cpu": "68030",
+    "cpu_level": 3,
+    "cpu_clock_mhz": 32,
+    "st_ram_kib": 4096,
+    "fast_ram_kib": 16384,
+    "addressing_bits": 32
+  },
+  "rom": {
+    "size_kib": 512,
+    "country": "us",
+    "source": "pinned-free-baseline"
+  },
+  "display": {
+    "monitor": "color",
+    "initial_resolution": "st-low"
+  },
+  "platform_features": {
+    "tt_video": true,
+    "tt_ram": true,
+    "mmu": true,
+    "fpu": true,
+    "second_mfp": true,
+    "scc": true,
+    "nvram": true,
+    "real_time_clock": true,
+    "scsi": true,
+    "vme_bus": true
+  },
+  "storage": {
+    "floppy_drives": 1,
+    "boot_device": "rom",
+    "hard_disk_required": false
+  },
+  "qualification": {
+    "emulator": "Hatari",
+    "compatible_mode": true,
+    "fast_boot": false,
+    "sound": false,
+    "minimum_vbls": 500,
+    "proprietary_atari_rom_required": false,
+    "must_regress": [
+      "st-68000-1m-192k-us",
+      "ste-68000-1m-256k-us",
+      "mega-st-68000-4m-192k-us",
+      "mega-ste-68000-4m-256k-us"
+    ]
+  }
+}
