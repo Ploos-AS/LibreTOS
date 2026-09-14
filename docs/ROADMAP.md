@@ -13,30 +13,66 @@ Exit criteria:
 - build/qualification direction documented
 - M1 plan defined
 
+Status: **complete**.
+
 ## M1 — Reproducible baseline + Hatari boot
 
 Goal: produce a reproducible free ROM/runtime baseline and boot it automatically in Hatari.
 
-Planned work:
+Completed:
 
-- pin an audited EmuTOS upstream baseline
-- establish the cross-toolchain
-- scripted build from a clean checkout
-- record hashes and build metadata
-- add Hatari configuration for Atari ST / 68000
-- automated boot smoke test
-- archive qualification evidence
+- pinned audited EmuTOS upstream baseline
+- Atari/MiNT cross-toolchain
+- scripted clean build
+- hashes and build metadata
+- Hatari Atari ST / 68000 boot smoke test
+- archived CI qualification evidence
 
-M1 does not imply that LibreTOS is already an independent implementation. Upstream-derived code and local changes must remain clearly distinguishable.
+See `docs/M1_QUALIFICATION.md`.
 
-## M2 — ST compatibility profile
+Status: **PASS (CI)**.
 
-- formalize machine profile
-- boot and API regression tests
-- floppy/media tests
-- GEMDOS/AES/VDI compatibility coverage
-- qualification report
+## M2 — ST compatibility profile + regression suite
 
-## Later
+Goal: turn the bootable baseline into an explicitly tested Atari ST / 68000 compatibility target.
 
-Potential profiles include STe, Mega ST/Mega STe, TT and Falcon. These are not M0 commitments.
+### M2.1 — Canonical machine profile
+
+- machine-readable ST/68000 profile
+- fixed CPU, RAM, ROM, display and storage assumptions
+- automated profile contract check
+
+Status: **implemented**. See `docs/M2_ST_PROFILE.md`.
+
+### M2.2 — Boot regression
+
+- make Hatari boot qualification consume the canonical profile
+- deterministic boot evidence and failure markers
+
+### M2.3 — GEMDOS regression
+
+- guest-side test payload
+- representative file/process/system calls
+- machine-readable result capture
+
+### M2.4 — AES/VDI regression
+
+- minimal AES application lifecycle coverage
+- basic VDI workstation/drawing coverage
+
+### M2.5 — Floppy/media regression
+
+- redistributable floppy fixtures
+- read/write cases
+- media-change behavior
+
+### M2.6 — M2 qualification
+
+- aggregate results and evidence
+- document tested compatibility boundaries
+
+M2 does not imply complete TOS compatibility. Claims must remain tied to explicit tests and the canonical machine profile.
+
+## M3+
+
+Incremental LibreTOS-specific improvements and broader machine profiles. Potential profiles include STe, Mega ST/Mega STe, TT and Falcon.

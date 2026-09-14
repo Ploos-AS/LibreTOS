@@ -12,6 +12,13 @@ jobs:
       - name: Qualify M0
         run: make qualify-m0
 
+  m2-profile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Qualify M2 ST/68000 profile
+        run: make qualify-m2-profile
+
   m1:
     runs-on: ubuntu-latest
     steps:

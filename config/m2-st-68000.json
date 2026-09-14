@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "id": "st-68000-1m-192k-us",
+  "milestone": "M2",
+  "machine": {
+    "family": "Atari ST",
+    "hatari_machine": "st",
+    "cpu": "68000",
+    "cpu_level": 0,
+    "cpu_clock_mhz": 8,
+    "st_ram_kib": 1024,
+    "fast_ram_kib": 0
+  },
+  "rom": {
+    "size_kib": 192,
+    "country": "us",
+    "source": "pinned-free-baseline"
+  },
+  "display": {
+    "monitor": "color",
+    "initial_resolution": "st-low"
+  },
+  "storage": {
+    "floppy_drives": 1,
+    "boot_device": "rom",
+    "hard_disk_required": false
+  },
+  "qualification": {
+    "emulator": "Hatari",
+    "compatible_mode": true,
+    "fast_boot": false,
+    "sound": false,
+    "minimum_vbls": 500,
+    "proprietary_atari_rom_required": false
+  }
+}
