@@ -22,19 +22,35 @@ Initial target:
 - Reproducible, automated builds where practical
 - Emulator qualification before hardware qualification
 - Compatibility claims backed by tests and qualification reports
+- Atari machine-family implementation and qualification before alternative-platform ports
+
+## Platform roadmap
+
+LibreTOS is **Atari first**. The planned platform progression is:
+
+**Atari ST → STe → Mega ST/Mega STe → TT030 → Falcon030 → Atari family convergence.**
+
+Only after that Atari-family baseline is established does the roadmap open an alternative native 68k target: **classic Amiga**. The future Amiga port is intended to run suitable TOS 68k applications natively through LibreTOS APIs, back GEM/VDI with Amiga hardware, and eventually provide optional access to Blitter, Copper, sprites, Paula and other chipset capabilities.
+
+Heavy direct Atari-hardware compatibility remains a separate problem and can cooperate with the sibling Amtari project rather than forcing all applications through full machine emulation.
 
 ## Milestones
 
 - **M0** — repository, scope, provenance/compliance policy, build and CI skeleton
 - **M1** — reproducible baseline build and first Hatari boot qualification
 - **M2** — Atari ST/68000 compatibility profile and regression suite
-- **M3+** — incremental LibreTOS-specific improvements and broader machine profiles
+- **M3** — Atari STe family
+- **M4** — Mega ST and Mega STe
+- **M5** — Atari TT030
+- **M6** — Atari Falcon030
+- **M7** — Atari family convergence and compatibility matrix
+- **M8+** — future native Amiga target and TOS-on-Amiga compatibility work
 
-See `docs/ROADMAP.md` and `docs/PROVENANCE.md`.
+See `docs/ROADMAP.md`, `docs/AMIGA_TARGET.md` and `docs/PROVENANCE.md`.
 
 ## Status
 
-M0 foundation.
+Atari implementation track active. Amiga target documented for future work after Atari-family convergence.
 
 ## Copyright
 
