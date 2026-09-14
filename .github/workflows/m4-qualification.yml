@@ -1,0 +1,35 @@
+name: M4 Qualification
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  m4-qualification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Atari/MiNT toolchain and Hatari
+        run: |
+          sudo add-apt-repository -y ppa:vriviere/ppa
+          sudo apt-get update
+          sudo apt-get install -y cross-mint-essential hatari xvfb git make
+      - name: Run aggregate M4.4 Mega ST family qualification
+        env:
+          HATARI_TIMEOUT_SECONDS: 60
+        run: make qualify-m4
+      - name: Upload M4.4 aggregate Mega family evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: libretos-m4-mega-qualification-evidence
+          path: |
+            build/m4/qualification/
+            build/m4/mega/LibreTOS-MegaST-68000-192k-us.img
+            build/m4/mega/LibreTOS-MegaSTe-68000-256k-us.img
+            build/m4/mega/SHA256SUMS
+            build/m4/mega/BUILDINFO.txt
+            build/m4/mega-boot/
+            build/m4/mega-platform/
+          if-no-files-found: warn
