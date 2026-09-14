@@ -25,9 +25,9 @@
       "status": "implemented",
       "profile": "config/m3-ste-68000.json",
       "cpu": "68000",
-      "rom_kib": 192,
+      "rom_kib": 256,
       "country": "us",
-      "artifact": "LibreTOS-STe-68000-192k-us.img"
+      "artifact": "LibreTOS-STe-68000-256k-us.img"
     },
     {
       "id": "mega-st-68000",
@@ -47,9 +47,9 @@
       "status": "planned",
       "profile": "config/m4-mega-ste-68000.json",
       "cpu": "68000",
-      "rom_kib": 192,
+      "rom_kib": 256,
       "country": "us",
-      "artifact": "LibreTOS-MegaSTe-68000-192k-us.img"
+      "artifact": "LibreTOS-MegaSTe-68000-256k-us.img"
     },
     {
       "id": "tt030-68030",
