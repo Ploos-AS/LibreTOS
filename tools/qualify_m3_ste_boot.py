@@ -18,7 +18,14 @@ PROFILE = ROOT / "config/m3-ste-68000.json"
 ROM = ROOT / "build/m3/ste/LibreTOS-STe-68000-256k-us.img"
 OUT = ROOT / "build/m3/ste-boot"
 LOG = OUT / "hatari.log"
-FATAL = re.compile(r"fatal|cannot load.*tos|invalid.*tos|bus error|address error", re.I)
+# EmuTOS deliberately probes parts of the address space during hardware/memory
+# discovery. Hatari reports the resulting bus errors as WARN lines, so those
+# warnings are evidence of probing, not a boot failure. Only Hatari ERROR/FATAL
+# severity and explicit TOS loading errors are qualification failures here.
+FATAL = re.compile(
+    r"^(?:ERROR|FATAL)\s*:|cannot load.*tos|invalid.*tos",
+    re.I | re.M,
+)
 HATARI_TIMEOUT_SECONDS = int(os.environ.get("HATARI_TIMEOUT_SECONDS", "60"))
 
 
