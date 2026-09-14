@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "id": "mega-ste-68000-4m-256k-us",
+  "milestone": "M4.1",
+  "machine": {
+    "family": "Atari Mega STe",
+    "representative_models": ["Mega STe 2", "Mega STe 4"],
+    "hatari_machine": "megaste",
+    "cpu": "68000",
+    "cpu_level": 0,
+    "cpu_clock_mhz": 16,
+    "st_ram_kib": 4096,
+    "fast_ram_kib": 0
+  },
+  "rom": {
+    "size_kib": 256,
+    "country": "us",
+    "source": "pinned-free-baseline"
+  },
+  "display": {
+    "monitor": "color",
+    "initial_resolution": "st-low",
+    "palette_entries": 16,
+    "palette_color_space": 4096
+  },
+  "platform_features": {
+    "ste_enhanced_shifter": true,
+    "dma_sound": true,
+    "blitter": true,
+    "hardware_scrolling": true,
+    "real_time_clock": true,
+    "cpu_16mhz_mode": true,
+    "vme_bus": true,
+    "scc": true
+  },
+  "storage": {
+    "floppy_drives": 1,
+    "boot_device": "rom",
+    "hard_disk_required": false
+  },
+  "qualification": {
+    "emulator": "Hatari",
+    "compatible_mode": true,
+    "fast_boot": false,
+    "sound": false,
+    "minimum_vbls": 500,
+    "proprietary_atari_rom_required": false,
+    "must_regress": ["ste-68000-1m-256k-us", "mega-st-68000-4m-192k-us"]
+  }
+}
