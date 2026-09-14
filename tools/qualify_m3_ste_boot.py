@@ -5,9 +5,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import shutil
+import signal
 import subprocess
 import sys
 
@@ -17,6 +19,7 @@ ROM = ROOT / "build/m3/ste/LibreTOS-STe-68000-192k-us.img"
 OUT = ROOT / "build/m3/ste-boot"
 LOG = OUT / "hatari.log"
 FATAL = re.compile(r"fatal|cannot load.*tos|invalid.*tos|bus error|address error", re.I)
+HATARI_TIMEOUT_SECONDS = int(os.environ.get("HATARI_TIMEOUT_SECONDS", "60"))
 
 
 def yesno(value: bool) -> str:
@@ -28,6 +31,24 @@ def fail(message: str, rc: int = 1) -> int:
     (OUT / "RESULT.txt").write_text(f"M3.2 STe boot regression: FAIL\nreason={message}\n", encoding="utf-8")
     print(f"M3.2 STe boot regression: FAIL ({message})", file=sys.stderr)
     return rc
+
+
+def run_bounded(command: list[str]) -> tuple[int | None, bool]:
+    """Run Hatari in its own process group and guarantee bounded execution."""
+    proc = subprocess.Popen(command, cwd=ROOT, start_new_session=True)
+    try:
+        return proc.wait(timeout=HATARI_TIMEOUT_SECONDS), False
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(proc.pid, signal.SIGTERM)
+            proc.wait(timeout=5)
+        except (ProcessLookupError, subprocess.TimeoutExpired):
+            try:
+                os.killpg(proc.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            proc.wait()
+        return None, True
 
 
 def main() -> int:
@@ -76,14 +97,17 @@ def main() -> int:
             f"fast_boot={yesno(bool(qualification['fast_boot']))}",
             f"sound={'on' if qualification['sound'] else 'off'}",
             f"run_vbls={qualification['minimum_vbls']}",
+            f"timeout_seconds={HATARI_TIMEOUT_SECONDS}",
         ]) + "\n",
         encoding="utf-8",
     )
 
     command = args if shutil.which("xvfb-run") is None else ["xvfb-run", "-a", *args]
-    completed = subprocess.run(command, cwd=ROOT, check=False)
-    if completed.returncode:
-        return fail(f"Hatari exit {completed.returncode}", completed.returncode)
+    returncode, timed_out = run_bounded(command)
+    if timed_out:
+        return fail(f"Hatari timeout after {HATARI_TIMEOUT_SECONDS}s")
+    if returncode:
+        return fail(f"Hatari exit {returncode}", int(returncode))
 
     log_text = LOG.read_text(encoding="utf-8", errors="replace") if LOG.exists() else ""
     if FATAL.search(log_text):
@@ -94,7 +118,8 @@ def main() -> int:
         f"profile_id={profile['id']}\n"
         f"artifact={ROM.name}\n"
         f"rom_sha256={digest}\n"
-        f"run_vbls={qualification['minimum_vbls']}\n",
+        f"run_vbls={qualification['minimum_vbls']}\n"
+        f"timeout_seconds={HATARI_TIMEOUT_SECONDS}\n",
         encoding="utf-8",
     )
     print("M3.2 STe boot regression: PASS")
