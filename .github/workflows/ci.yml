@@ -43,3 +43,30 @@ jobs:
             build/m1/BUILDINFO.txt
             build/m1/hatari.log
           if-no-files-found: warn
+
+  m2-boot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Atari/MiNT toolchain and Hatari
+        run: |
+          sudo add-apt-repository -y ppa:vriviere/ppa
+          sudo apt-get update
+          sudo apt-get install -y cross-mint-essential hatari xvfb git make
+
+      - name: Qualify M2.2 boot regression
+        run: make qualify-m2-boot
+
+      - name: Upload M2.2 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: libretos-m2-boot-evidence
+          path: |
+            build/m2/boot/PROFILE.json
+            build/m2/boot/ROM.sha256
+            build/m2/boot/HATARI_PROFILE.txt
+            build/m2/boot/RESULT.txt
+            build/m2/boot/hatari.log
+          if-no-files-found: warn
