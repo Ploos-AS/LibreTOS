@@ -12,6 +12,13 @@ jobs:
       - name: Qualify M0
         run: make qualify-m0
 
+  target-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify permanent Atari target matrix
+        run: make qualify-target-matrix
+
   m2-profile:
     runs-on: ubuntu-latest
     steps:
