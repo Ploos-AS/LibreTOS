@@ -1,4 +1,4 @@
-.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2 qualify-target-matrix qualify-m3-profile build-m3-ste qualify-m3-boot
+.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2 qualify-target-matrix qualify-m3-profile build-m3-ste qualify-m3-boot qualify-m3-platform
 
 help:
 	@echo "LibreTOS"
@@ -17,6 +17,7 @@ help:
 	@echo "  make qualify-m3-profile - verify canonical M3.1 Atari STe/68000 profile"
 	@echo "  make build-m3-ste       - build dedicated Atari STe ROM artifact"
 	@echo "  make qualify-m3-boot    - run M3.2 Atari STe Hatari boot regression"
+	@echo "  make qualify-m3-platform - run M3.3 guest-side STe platform/XBIOS probe"
 
 check: qualify-m0 qualify-m2-profile qualify-target-matrix qualify-m3-profile
 
@@ -61,3 +62,6 @@ build-m3-ste: qualify-m3-profile
 
 qualify-m3-boot: qualify-m3-profile build-m3-ste
 	@python3 tools/qualify_m3_ste_boot.py
+
+qualify-m3-platform: qualify-m3-profile build-m3-ste
+	@python3 tools/qualify_m3_ste_platform.py
