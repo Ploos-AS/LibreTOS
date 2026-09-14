@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "policy": {
+    "single_codebase": true,
+    "retain_all_targets": true,
+    "artifact_naming": "LibreTOS-{target}-{cpu}-{rom_kib}k-{country}.img",
+    "regression_rule": "later targets must not replace or silently weaken earlier qualified targets"
+  },
+  "targets": [
+    {
+      "id": "st-68000",
+      "label": "Atari ST",
+      "milestone": "M2",
+      "status": "qualified",
+      "profile": "config/m2-st-68000.json",
+      "cpu": "68000",
+      "rom_kib": 192,
+      "country": "us",
+      "artifact": "LibreTOS-ST-68000-192k-us.img"
+    },
+    {
+      "id": "ste-68000",
+      "label": "Atari STe",
+      "milestone": "M3",
+      "status": "planned",
+      "profile": "config/m3-ste-68000.json",
+      "cpu": "68000",
+      "rom_kib": 192,
+      "country": "us",
+      "artifact": "LibreTOS-STe-68000-192k-us.img"
+    },
+    {
+      "id": "mega-st-68000",
+      "label": "Atari Mega ST",
+      "milestone": "M4",
+      "status": "planned",
+      "profile": "config/m4-mega-st-68000.json",
+      "cpu": "68000",
+      "rom_kib": 192,
+      "country": "us",
+      "artifact": "LibreTOS-MegaST-68000-192k-us.img"
+    },
+    {
+      "id": "mega-ste-68000",
+      "label": "Atari Mega STe",
+      "milestone": "M4",
+      "status": "planned",
+      "profile": "config/m4-mega-ste-68000.json",
+      "cpu": "68000",
+      "rom_kib": 192,
+      "country": "us",
+      "artifact": "LibreTOS-MegaSTe-68000-192k-us.img"
+    },
+    {
+      "id": "tt030-68030",
+      "label": "Atari TT030",
+      "milestone": "M5",
+      "status": "planned",
+      "profile": "config/m5-tt030-68030.json",
+      "cpu": "68030",
+      "rom_kib": 512,
+      "country": "us",
+      "artifact": "LibreTOS-TT030-68030-512k-us.img"
+    },
+    {
+      "id": "falcon030-68030",
+      "label": "Atari Falcon030",
+      "milestone": "M6",
+      "status": "planned",
+      "profile": "config/m6-falcon030-68030.json",
+      "cpu": "68030",
+      "rom_kib": 512,
+      "country": "us",
+      "artifact": "LibreTOS-Falcon030-68030-512k-us.img"
+    }
+  ]
+}
