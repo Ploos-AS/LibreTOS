@@ -49,12 +49,14 @@ Goal: turn the bootable baseline into an explicitly tested Atari ST / 68000 comp
 - fixed CPU, RAM, ROM, display and storage assumptions
 - automated profile contract check
 
-Status: **implemented**. See `docs/M2_ST_PROFILE.md`.
+Status: **PASS (CI)**. See `docs/M2_ST_PROFILE.md`.
 
 ### M2.2 — Boot regression
 
 - make Hatari boot qualification consume the canonical profile
 - deterministic boot evidence and failure markers
+
+Status: **PASS (CI)**. See `docs/M2_2_BOOT_REGRESSION.md`.
 
 ### M2.3 — GEMDOS regression
 
@@ -62,10 +64,14 @@ Status: **implemented**. See `docs/M2_ST_PROFILE.md`.
 - representative file/process/system calls
 - machine-readable result capture
 
+Status: **PASS (CI)**.
+
 ### M2.4 — AES/VDI regression
 
 - minimal AES application lifecycle coverage
 - basic VDI workstation/drawing coverage
+
+Status: **implemented; CI qualification pending**. See `docs/M2_4_AES_VDI.md`.
 
 ### M2.5 — Floppy/media regression
 
