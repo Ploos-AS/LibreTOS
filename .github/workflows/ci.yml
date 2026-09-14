@@ -19,6 +19,13 @@ jobs:
       - name: Verify permanent Atari target matrix
         run: make qualify-target-matrix
 
+  m4-profiles:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Qualify M4.1 Mega ST / Mega STe profiles
+        run: make qualify-m4-profiles
+
   m3-profile:
     runs-on: ubuntu-latest
     steps:
