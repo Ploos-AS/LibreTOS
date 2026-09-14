@@ -16,7 +16,11 @@ ROOT = Path(__file__).resolve().parents[1]
 PROFILE = ROOT / "config/m6-falcon030-68030.json"
 ROM = ROOT / "build/m6/falcon030/LibreTOS-Falcon030-68030-512k-us.img"
 OUT = ROOT / "build/m6/falcon030-boot"
-FATAL = re.compile(r"^(?:ERROR|FATAL)\s*:|cannot load.*tos|invalid.*tos", re.I | re.M)
+# Hatari can emit host-environment ERROR lines that are non-fatal even when the
+# requested guest run completes successfully (notably SDL microphone setup on
+# headless GitHub runners). Treat TOS/ROM load failures and FATAL lines as boot
+# failures; process exit status remains the primary runtime failure signal.
+FATAL = re.compile(r"^FATAL\s*:|cannot load.*tos|invalid.*tos|cannot load.*rom|invalid.*rom", re.I | re.M)
 TIMEOUT = int(os.environ.get("HATARI_TIMEOUT_SECONDS", "60"))
 
 
@@ -137,7 +141,7 @@ def main() -> int:
 
     log_text = log.read_text(encoding="utf-8", errors="replace") if log.exists() else ""
     if FATAL.search(log_text):
-        return fail("fatal marker in Hatari log")
+        return fail("fatal TOS/ROM marker in Hatari log")
 
     result = {
         "schema": 1,
