@@ -1,4 +1,4 @@
-.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media
+.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2
 
 help:
 	@echo "LibreTOS"
@@ -12,6 +12,7 @@ help:
 	@echo "  make qualify-m2-gemdos  - run M2.3 guest-side GEMDOS regression"
 	@echo "  make qualify-m2-aes-vdi - run M2.4 guest-side AES/VDI regression"
 	@echo "  make qualify-m2-media   - run M2.5 floppy/media regression"
+	@echo "  make qualify-m2         - run aggregate M2.6 Atari ST qualification"
 
 check: qualify-m0 qualify-m2-profile
 
@@ -41,3 +42,6 @@ qualify-m2-aes-vdi: qualify-m2-profile build-m1
 
 qualify-m2-media: qualify-m2-profile build-m1
 	@python3 tools/qualify_m2_media.py
+
+qualify-m2:
+	@python3 tools/qualify_m2.py
