@@ -28,6 +28,7 @@ jobs:
 
   m3-boot:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - name: Install Atari/MiNT toolchain and Hatari
@@ -36,6 +37,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y cross-mint-essential hatari xvfb git make
       - name: Build and qualify M3.2 Atari STe boot
+        env:
+          HATARI_TIMEOUT_SECONDS: 60
         run: make qualify-m3-boot
       - name: Upload M3.2 STe evidence and ROM
         if: always()
