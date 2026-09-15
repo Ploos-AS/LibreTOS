@@ -1,4 +1,4 @@
-.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2 qualify-target-matrix qualify-m3-profile build-m3-ste qualify-m3-boot qualify-m3-platform qualify-m3-enhanced qualify-m3 qualify-m4-profiles build-m4-mega qualify-m4-boot qualify-m4-platform qualify-m4 qualify-m5-profile build-m5-tt030 qualify-m5-boot qualify-m5-platform qualify-m5-enhanced qualify-m5 qualify-m6-profile build-m6-falcon030 qualify-m6-boot qualify-m6-platform qualify-m6-enhanced
+.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2 qualify-target-matrix qualify-m3-profile build-m3-ste qualify-m3-boot qualify-m3-platform qualify-m3-enhanced qualify-m3 qualify-m4-profiles build-m4-mega qualify-m4-boot qualify-m4-platform qualify-m4 qualify-m5-profile build-m5-tt030 qualify-m5-boot qualify-m5-platform qualify-m5-enhanced qualify-m5 qualify-m6-profile build-m6-falcon030 qualify-m6-boot qualify-m6-platform qualify-m6-enhanced qualify-m6
 
 help:
 	@echo "LibreTOS"
@@ -36,6 +36,7 @@ help:
 	@echo "  make qualify-m6-boot    - run M6.2 Atari Falcon030 Hatari boot regression"
 	@echo "  make qualify-m6-platform - run M6.3 guest-side Falcon030 platform probe"
 	@echo "  make qualify-m6-enhanced - run M6.4 Falcon030 enhanced interface qualification"
+	@echo "  make qualify-m6         - run aggregate M6.5 Atari Falcon030 qualification"
 
 check: qualify-m0 qualify-m2-profile qualify-target-matrix qualify-m3-profile qualify-m4-profiles qualify-m5-profile qualify-m6-profile
 
@@ -105,3 +106,5 @@ qualify-m6-platform: qualify-m6-profile build-m6-falcon030
 	@python3 tools/qualify_m6_falcon030_platform.py
 qualify-m6-enhanced: qualify-m6-profile build-m6-falcon030
 	@python3 tools/qualify_m6_falcon030_enhanced.py
+qualify-m6:
+	@python3 tools/qualify_m6.py
