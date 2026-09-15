@@ -1,0 +1,28 @@
+name: M6 Platform
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  m6-platform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Atari/MiNT toolchain and Hatari
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y hatari xvfb curl xz-utils make gcc
+          make fetch-toolchain
+          echo "$PWD/build/toolchain/bin" >> "$GITHUB_PATH"
+      - name: Build and qualify M6.3 Atari Falcon030 platform
+        run: make qualify-m6-platform
+      - name: Upload M6.3 Falcon030 evidence and ROM
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: libretos-m6-falcon030-platform-evidence
+          path: |
+            build/m6/falcon030-platform/
+            build/m6/falcon030/LibreTOS-Falcon030-68030-512k-us.img
+          if-no-files-found: warn
