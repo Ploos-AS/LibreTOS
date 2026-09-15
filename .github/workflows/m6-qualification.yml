@@ -1,0 +1,35 @@
+name: M6 Qualification
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  m6-qualification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Atari/MiNT toolchain and Hatari
+        run: |
+          sudo add-apt-repository -y ppa:vriviere/ppa
+          sudo apt-get update
+          sudo apt-get install -y cross-mint-essential hatari xvfb git make
+      - name: Run aggregate M6.5 Atari Falcon030 qualification
+        env:
+          HATARI_TIMEOUT_SECONDS: 60
+        run: make qualify-m6
+      - name: Upload M6.5 Falcon030 aggregate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: libretos-m6-falcon030-qualification-evidence
+          path: |
+            build/m6/qualification/
+            build/m6/falcon030/LibreTOS-Falcon030-68030-512k-us.img
+            build/m6/falcon030/SHA256SUMS
+            build/m6/falcon030/BUILDINFO.txt
+            build/m6/falcon030-boot/
+            build/m6/falcon030-platform/
+            build/m6/falcon030-enhanced/
+          if-no-files-found: warn
