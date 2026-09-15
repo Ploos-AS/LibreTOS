@@ -7,15 +7,17 @@ on:
 jobs:
   m6-enhanced:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Install Atari/MiNT toolchain and Hatari
         run: |
+          sudo add-apt-repository -y ppa:vriviere/ppa
           sudo apt-get update
-          sudo apt-get install -y hatari xvfb curl xz-utils make gcc
-          make fetch-toolchain
-          echo "$PWD/build/toolchain/bin" >> "$GITHUB_PATH"
+          sudo apt-get install -y cross-mint-essential hatari xvfb git make
       - name: Build and qualify M6.4 Atari Falcon030 enhanced interfaces
+        env:
+          HATARI_TIMEOUT_SECONDS: 60
         run: make qualify-m6-enhanced
       - name: Upload M6.4 Falcon030 evidence and ROM
         if: always()
