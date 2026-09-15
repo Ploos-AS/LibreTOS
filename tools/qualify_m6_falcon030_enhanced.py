@@ -9,7 +9,11 @@ ROM=ROOT/'build/m6/falcon030/LibreTOS-Falcon030-68030-512k-us.img'
 SOURCE=ROOT/'tests/m6/falcon030_enhanced_probe.c'
 OUT=ROOT/'build/m6/falcon030-enhanced'
 TIMEOUT=int(os.environ.get('HATARI_TIMEOUT_SECONDS','60'))
-FATAL=re.compile(r'(?:^|\n)(?:ERROR|FATAL)\s*:|cannot load.*tos|invalid.*tos',re.I)
+# Hatari may emit non-fatal host-environment ERROR lines on headless runners
+# (for example SDL audio/microphone setup) while the Falcon guest continues
+# normally. Exit status is the primary runtime signal; only explicit FATAL and
+# TOS/ROM load-invalid markers are treated as fatal log evidence.
+FATAL=re.compile(r'^FATAL\s*:|cannot load.*tos|invalid.*tos|cannot load.*rom|invalid.*rom',re.I|re.M)
 def sha256(p):
  h=hashlib.sha256(); h.update(p.read_bytes()); return h.hexdigest()
 def yn(v): return 'yes' if v else 'no'
@@ -47,7 +51,7 @@ def main():
  if rc is None:return fail(f'Hatari timeout after {TIMEOUT}s')
  if rc:return fail(f'Hatari exit {rc}')
  text=log.read_text(errors='replace') if log.exists() else ''
- if FATAL.search(text):return fail('fatal marker in Hatari log')
+ if FATAL.search(text):return fail('fatal TOS/ROM marker in Hatari log')
  if not result.is_file():return fail('guest result missing')
  f=fields(result)
  if f.get('schema')!='1' or f.get('profile')!=profile['id'] or f.get('status')!='PASS':return fail(f'guest verdict {f.get("status","missing")} stage={f.get("stage","unknown")}')
