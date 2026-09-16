@@ -16,6 +16,19 @@ static long mch_value = -1L;
 static long cpu_value = -1L;
 static long vdo_value = -1L;
 
+static int write_stage(const char *stage)
+{
+    char buf[160];
+    int len, handle;
+    len = sprintf(buf, "schema=1\r\nprofile=%s\r\nstatus=RUNNING\r\nstage=%s\r\n",
+                  PROFILE_NAME, stage);
+    handle = Fcreate(RESULT_FILE, 0);
+    if (handle < 0) return 1;
+    if (Fwrite(handle, len, buf) != len) { Fclose(handle); return 1; }
+    Fclose(handle);
+    return 0;
+}
+
 static long read_platform_state(void)
 {
     long *jar = *(long **)0x5a0L;
@@ -53,10 +66,16 @@ int main(void)
     int rez;
     long phys, log;
     unsigned long family;
+
+    if (write_stage("entry")) return 10;
     Supexec(read_platform_state);
+    if (write_stage("supexec")) return 11;
     rez = Getrez();
+    if (write_stage("getrez")) return 12;
     phys = (long)Physbase();
+    if (write_stage("physbase")) return 13;
     log = (long)Logbase();
+    if (write_stage("logbase")) return 14;
     family = ((unsigned long)mch_value >> 16) & 0xffffUL;
 
     if (family != 3UL) { write_result("FAIL", "mch-falcon-family", rez, phys, log); return 2; }
