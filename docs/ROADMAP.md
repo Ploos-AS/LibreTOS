@@ -7,6 +7,22 @@ LibreTOS is developed in two deliberate phases:
 
 The Amiga target is therefore a documented future direction, not a shortcut around Atari compatibility work.
 
+## Project-wide machine-variant policy
+
+LibreTOS uses shared source code and common build/CI infrastructure, but **does not replace the individual Atari machine ROMs with one generic ROM**.
+
+Every supported Atari machine profile must have a stable identifier, deterministic machine-specific build, explicit qualification path and separately named ROM/image retained as a release artifact. Adding support for a newer machine must not remove, replace or make unreproducible the ROMs for earlier supported machines.
+
+A shared machine/profile schema exists to make the model-specific builds consistent; it is not a universal-ROM design. Machine-specific CPU, memory, video, storage, audio, BIOS/XBIOS and other hardware differences remain explicit in their profiles and qualification evidence.
+
+Every LibreTOS release that claims support for a machine must publish that machine's qualified ROM/image separately. A universal image may be researched later as an optional convenience, but it must never replace the canonical per-machine artifacts.
+
+The project-wide pipeline is:
+
+**shared source → machine profile → machine-specific build → machine-specific qualification → separate retained release ROM/image**
+
+This same preservation and release principle is used by LibreKick and LibreROM.
+
 ## M0 — Foundation
 
 Goal: establish a legally and technically clean project baseline.
@@ -98,6 +114,7 @@ Planned scope:
 - blitter coverage where applicable
 - STe-specific BIOS/XBIOS behavior
 - Hatari regression profile and qualification evidence
+- retain and publish a separate STe ROM/image rather than replacing the ST artifact
 
 Representative machines:
 
@@ -115,6 +132,7 @@ Planned scope:
 - blitter/cache/platform-control behavior as applicable
 - storage and peripheral differences
 - compatibility regression against ST and STe profiles
+- separate retained release artifacts for Mega ST and Mega STe profiles
 
 Representative machines:
 
@@ -133,6 +151,7 @@ Planned scope:
 - SCSI/storage behavior
 - FPU-aware qualification where applicable
 - 68000 compatibility regression
+- separate retained TT030 ROM/image
 
 Representative machine:
 
@@ -150,24 +169,27 @@ Planned scope:
 - Falcon audio architecture
 - DSP-facing OS interfaces and behavior
 - compatibility regression against earlier Atari targets
+- separate retained Falcon030 ROM/image
 
 Representative machine:
 
 - Atari Falcon030
 
-## M7 — Atari family convergence
+## M7 — Atari family convergence and multi-model release
 
-Goal: make the individual Atari profiles one coherent LibreTOS platform family rather than isolated ports.
+Goal: make the individual Atari profiles one coherent LibreTOS platform family while preserving them as separate machine-specific ROM/image builds.
 
 Exit criteria:
 
-- shared machine/profile schema
+- shared machine/profile schema that does not collapse model-specific builds
 - ST, STe, Mega ST/Mega STe, TT030 and Falcon030 profiles represented in CI where automation is practical
+- deterministic machine-specific build for every retained profile
 - common GEMDOS/AES/VDI regression suite
 - machine-specific BIOS/XBIOS regression coverage
 - documented compatibility matrix
 - documented hardware/emulator qualification boundaries
-- no regression of earlier qualified profiles when later machine support lands
+- release packaging that publishes each supported machine ROM/image as a separate artifact
+- no regression, replacement or silent removal of earlier qualified profiles when later machine support lands
 
 **Gate:** M7 is the planned prerequisite for beginning the Amiga platform implementation.
 
