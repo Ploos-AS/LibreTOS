@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ploos.no/libretos/machine-profile.schema.json",
+  "title": "LibreTOS Atari machine profile",
+  "description": "Shared contract for machine-specific LibreTOS Atari profiles. This schema standardizes metadata without creating a universal ROM; every profile remains a separate build, qualification target and release artifact.",
+  "type": "object",
+  "required": ["schema", "id", "milestone", "machine", "rom", "display", "storage", "qualification"],
+  "properties": {
+    "schema": {"const": 1},
+    "id": {"type": "string", "minLength": 1},
+    "milestone": {"type": "string", "pattern": "^M[0-9]+(?:\\.[0-9]+)?$"},
+    "machine": {
+      "type": "object",
+      "required": ["family", "hatari_machine", "cpu", "cpu_level", "cpu_clock_mhz", "st_ram_kib", "fast_ram_kib"],
+      "properties": {
+        "family": {"type": "string", "minLength": 1},
+        "representative_models": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": true},
+        "hatari_machine": {"enum": ["st", "ste", "megast", "megaste", "tt", "falcon"]},
+        "cpu": {"enum": ["68000", "68020", "68030", "68040", "68060"]},
+        "cpu_level": {"type": "integer", "minimum": 0, "maximum": 6},
+        "cpu_clock_mhz": {"type": "integer", "minimum": 1},
+        "st_ram_kib": {"type": "integer", "minimum": 128},
+        "fast_ram_kib": {"type": "integer", "minimum": 0},
+        "addressing_bits": {"enum": [24, 32]}
+      },
+      "additionalProperties": true
+    },
+    "rom": {
+      "type": "object",
+      "required": ["size_kib", "country", "source"],
+      "properties": {
+        "size_kib": {"type": "integer", "minimum": 1},
+        "country": {"type": "string", "minLength": 1},
+        "source": {"type": "string", "minLength": 1},
+        "artifact": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": true
+    },
+    "display": {"type": "object", "required": ["monitor", "initial_resolution"], "additionalProperties": true},
+    "platform_features": {"type": "object", "additionalProperties": {"type": ["boolean", "integer", "string"]}},
+    "storage": {
+      "type": "object",
+      "required": ["floppy_drives", "boot_device", "hard_disk_required"],
+      "properties": {
+        "floppy_drives": {"type": "integer", "minimum": 0},
+        "boot_device": {"type": "string", "minLength": 1},
+        "hard_disk_required": {"type": "boolean"}
+      },
+      "additionalProperties": true
+    },
+    "qualification": {
+      "type": "object",
+      "required": ["emulator", "compatible_mode", "fast_boot", "sound", "minimum_vbls", "proprietary_atari_rom_required"],
+      "properties": {
+        "emulator": {"const": "Hatari"},
+        "compatible_mode": {"type": "boolean"},
+        "fast_boot": {"type": "boolean"},
+        "sound": {"type": "boolean"},
+        "minimum_vbls": {"type": "integer", "minimum": 1},
+        "proprietary_atari_rom_required": {"const": false},
+        "must_regress": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
