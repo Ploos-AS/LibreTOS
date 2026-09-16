@@ -10,8 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Qualify M7.4 prerequisites
+        run: make qualify-m7-compatibility
       - name: Qualify M7.5 release bundle
-        run: make qualify-m7-release-bundle
+        run: python3 tools/qualify_m7_release_bundle.py
       - name: Upload M7.5 evidence
         uses: actions/upload-artifact@v4
         with:
