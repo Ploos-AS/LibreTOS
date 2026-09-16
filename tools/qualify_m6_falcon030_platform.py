@@ -36,20 +36,20 @@ def main():
  for p in (PROFILE,ROM,SOURCE):
   if not p.is_file(): return fail('missing '+str(p))
  profile=json.loads(PROFILE.read_text()); q=profile['qualification']; OUT.mkdir(parents=True,exist_ok=True)
- hd=OUT/'hd'; auto=hd/'AUTO'; auto.mkdir(parents=True,exist_ok=True); probe=auto/'M6FAL.PRG'; result=hd/'M6FAL.TXT'; log=OUT/'hatari.log'
- result.unlink(missing_ok=True); (hd/'EMUDESK.INF').unlink(missing_ok=True)
+ hd=OUT/'hd'; auto=hd/'AUTO'; auto.mkdir(parents=True,exist_ok=True); probe=auto/'M6FAL.PRG'; result=hd/'M6FAL.TXT'; log=OUT/'hatari.log'; trace=OUT/'hatari-trace.log'
+ result.unlink(missing_ok=True); (hd/'EMUDESK.INF').unlink(missing_ok=True); trace.unlink(missing_ok=True)
  cp=subprocess.run(['m68k-atari-mint-gcc','-m68020-60','-O2','-s',f'-DPROFILE_NAME="{profile["id"]}"','-DRESULT_FILE="C:\\\\M6FAL.TXT"','-o',str(probe),str(SOURCE)],cwd=ROOT)
  if cp.returncode:return fail(f'guest probe compile exit {cp.returncode}')
  run_vbls=max(int(q['minimum_vbls']),5000)
- effective={'profile_id':profile['id'],'machine':'falcon','cpu_level':3,'cpu_clock_mhz':16,'st_ram_mib':4,'addressing_bits':32,'mmu':True,'run_vbls':run_vbls,'guest_program':'C:\\AUTO\\M6FAL.PRG','result_file':'C:\\M6FAL.TXT','launch':'gemdos-auto-observed-by-hatari','startup_margin':'5000-vbl-minimum'}
+ effective={'profile_id':profile['id'],'machine':'falcon','cpu_level':3,'cpu_clock_mhz':16,'st_ram_mib':4,'addressing_bits':32,'mmu':True,'run_vbls':run_vbls,'guest_program':'C:\\AUTO\\M6FAL.PRG','result_file':'C:\\M6FAL.TXT','launch':'gemdos-auto-with-gemdos-trace','trace':'gemdos','startup_margin':'5000-vbl-minimum'}
  (OUT/'PROFILE.json').write_text(json.dumps(profile,indent=2,sort_keys=True)+'\n'); (OUT/'ROM.sha256').write_text(f'{sha256(ROM)}  {ROM.name}\n'); (OUT/'PROBE.sha256').write_text(f'{sha256(probe)}  {probe.name}\n'); (OUT/'HATARI_PROFILE.json').write_text(json.dumps(effective,indent=2,sort_keys=True)+'\n')
- cmd=['hatari','--tos',str(ROM),'--machine','falcon','--memsize','4','--cpulevel','3','--cpuclock','16','--addr24','no','--mmu','on','--compatible',yn(bool(q['compatible_mode'])),'--fast-boot',yn(bool(q['fast_boot'])),'--sound','off','--confirm-quit','no','--benchmark','--run-vbls',str(run_vbls),'--harddrive',str(hd),'--protect-hd','off','--gemdos-case','upper','--log-file',str(log)]
+ cmd=['hatari','--tos',str(ROM),'--machine','falcon','--memsize','4','--cpulevel','3','--cpuclock','16','--addr24','no','--mmu','on','--compatible',yn(bool(q['compatible_mode'])),'--fast-boot',yn(bool(q['fast_boot'])),'--sound','off','--confirm-quit','no','--benchmark','--run-vbls',str(run_vbls),'--harddrive',str(hd),'--protect-hd','off','--gemdos-case','upper','--trace','gemdos','--trace-file',str(trace),'--log-file',str(log)]
  command=cmd if not shutil.which('xvfb-run') else ['xvfb-run','-a',*cmd]; rc=bounded(command)
  if rc is None:return fail(f'Hatari timeout after {TIMEOUT}s')
  if rc:return fail(f'Hatari exit {rc}')
  text=log.read_text(errors='replace') if log.exists() else ''
  if FATAL.search(text):return fail('fatal marker in Hatari log')
- if not result.is_file():return fail('guest result missing')
+ if not result.is_file():return fail('guest result missing; inspect hatari-trace.log for GEMDOS boot/AUTO activity')
  f=fields_text(result.read_bytes())
  if f.get('schema')!='1' or f.get('profile')!=profile['id'] or f.get('status')!='PASS':return fail(f'guest verdict {f.get("status","missing")} stage={f.get("stage","unknown")}')
  try:mch=int(f['mch'],0); cpu=int(f['cpu'],0); vdo=int(f['vdo'],0); phys=int(f['physbase'],0); logbase=int(f['logbase'],0)
