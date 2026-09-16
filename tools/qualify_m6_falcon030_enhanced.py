@@ -36,13 +36,17 @@ def main():
  for p in (PROFILE,ROM,SOURCE):
   if not p.is_file(): return fail('missing '+str(p))
  profile=json.loads(PROFILE.read_text()); q=profile['qualification']
- hd=OUT/'hd'; auto=hd/'AUTO'; auto.mkdir(parents=True,exist_ok=True); probe=auto/'M6FALE.PRG'; result=hd/'M6FALE.TXT'; result.unlink(missing_ok=True); log=OUT/'hatari.log'
+ hd=OUT/'hd'; hd.mkdir(parents=True,exist_ok=True); probe=hd/'M6FALE.TOS'; result=hd/'M6FALE.TXT'; result.unlink(missing_ok=True); log=OUT/'hatari.log'
  cp=subprocess.run(['m68k-atari-mint-gcc','-m68020-60','-O2','-s',f'-DPROFILE_NAME="{profile["id"]}"','-DRESULT_FILE="C:\\\\M6FALE.TXT"','-o',str(probe),str(SOURCE)],cwd=ROOT)
  if cp.returncode:return fail(f'guest probe compile exit {cp.returncode}')
- run_vbls=max(int(q['minimum_vbls']),1500)
- effective={'profile_id':profile['id'],'machine':'falcon','cpu_level':3,'cpu_clock_mhz':16,'st_ram_mib':4,'addressing_bits':32,'mmu':True,'sound_hz':44100,'run_vbls':run_vbls,'guest_program':'C:\\AUTO\\M6FALE.PRG','result_file':'C:\\M6FALE.TXT','launch':'gemdos-auto-folder','qualified':['VIDEL identification','Falcon sound capability discovery'],'observed':['FPU cookie'],'excluded':['DSP execution semantics','IDE read/write semantics','NVRAM persistence','external audio fidelity']}
+ # Match the qualified M6.3 launch path: Falcon/VIDEL startup on the headless
+ # runner needs more than the historical 1500-VBL window before GEM --auto
+ # execution becomes reliable.
+ run_vbls=max(int(q['minimum_vbls']),5000)
+ guest_program='C:\\M6FALE.TOS'
+ effective={'profile_id':profile['id'],'machine':'falcon','cpu_level':3,'cpu_clock_mhz':16,'st_ram_mib':4,'addressing_bits':32,'mmu':True,'sound_hz':44100,'run_vbls':run_vbls,'guest_program':guest_program,'result_file':'C:\\M6FALE.TXT','launch':'hatari-auto-root','startup_margin':'5000-vbl-minimum','qualified':['VIDEL identification','Falcon sound capability discovery'],'observed':['FPU cookie'],'excluded':['DSP execution semantics','IDE read/write semantics','NVRAM persistence','external audio fidelity']}
  OUT.mkdir(parents=True,exist_ok=True); (OUT/'PROFILE.json').write_text(json.dumps(profile,indent=2,sort_keys=True)+'\n'); (OUT/'ROM.sha256').write_text(f'{sha256(ROM)}  {ROM.name}\n'); (OUT/'PROBE.sha256').write_text(f'{sha256(probe)}  {probe.name}\n'); (OUT/'HATARI_PROFILE.json').write_text(json.dumps(effective,indent=2,sort_keys=True)+'\n')
- cmd=['hatari','--tos',str(ROM),'--machine','falcon','--memsize','4','--cpulevel','3','--cpuclock','16','--addr24','no','--mmu','on','--compatible',yn(bool(q['compatible_mode'])),'--fast-boot',yn(bool(q['fast_boot'])),'--sound','44100','--confirm-quit','no','--benchmark','--run-vbls',str(run_vbls),'--harddrive',str(hd),'--protect-hd','off','--gemdos-case','upper','--log-file',str(log)]
+ cmd=['hatari','--tos',str(ROM),'--machine','falcon','--memsize','4','--cpulevel','3','--cpuclock','16','--addr24','no','--mmu','on','--compatible',yn(bool(q['compatible_mode'])),'--fast-boot',yn(bool(q['fast_boot'])),'--sound','44100','--confirm-quit','no','--benchmark','--run-vbls',str(run_vbls),'--harddrive',str(hd),'--protect-hd','off','--gemdos-case','upper','--auto',guest_program,'--log-file',str(log)]
  command=cmd if not shutil.which('xvfb-run') else ['xvfb-run','-a',*cmd]; rc=bounded(command)
  if rc is None:return fail(f'Hatari timeout after {TIMEOUT}s')
  if rc:return fail(f'Hatari exit {rc}')
