@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Run M6.3 guest-side platform qualification for canonical Atari Falcon030."""
 from __future__ import annotations
-import hashlib, json, os, re, shutil, signal, struct, subprocess, sys
+import hashlib, json, os, re, shutil, signal, subprocess, sys
 from pathlib import Path
-from make_auto_floppy import build_auto_floppy
 ROOT=Path(__file__).resolve().parents[1]
 PROFILE=ROOT/'config/m6-falcon030-68030.json'
 ROM=ROOT/'build/m6/falcon030/LibreTOS-Falcon030-68030-512k-us.img'
@@ -25,46 +24,44 @@ def bounded(cmd):
    try: os.killpg(p.pid,signal.SIGKILL)
    except ProcessLookupError: pass
   return None
-def extract_root_file(image_path,name):
- image=image_path.read_bytes(); bps=struct.unpack_from('<H',image,11)[0]; reserved=struct.unpack_from('<H',image,14)[0]; fats=image[16]; root_entries=struct.unpack_from('<H',image,17)[0]; fat_sectors=struct.unpack_from('<H',image,22)[0]
- root=(reserved+fats*fat_sectors)*bps; data_sector=reserved+fats*fat_sectors+((root_entries*32+bps-1)//bps); wanted=name.upper().partition('.')[0].encode().ljust(8)+name.upper().partition('.')[2].encode().ljust(3)
- for off in range(root,root+root_entries*32,32):
-  ent=image[off:off+32]
-  if ent[0] in (0,0xe5) or ent[11]&0x18: continue
-  if ent[:11]!=wanted: continue
-  cluster=struct.unpack_from('<H',ent,26)[0]; size=struct.unpack_from('<I',ent,28)[0]; out=bytearray(); fat=image[reserved*bps:(reserved+fat_sectors)*bps]
-  while 2<=cluster<0xff8 and len(out)<size:
-   pos=(data_sector+cluster-2)*bps; out.extend(image[pos:pos+bps]); idx=cluster+cluster//2; pair=fat[idx]|(fat[idx+1]<<8); cluster=(pair>>4)&0xfff if cluster&1 else pair&0xfff
-  return bytes(out[:size])
- return None
 def fields_text(raw):
  d={}
  for line in raw.decode('ascii',errors='replace').replace('\r\n','\n').splitlines():
   if '=' in line:
    k,v=line.split('=',1); d[k.strip()]=v.strip()
  return d
+def emudesk(program):
+ # Persistent EmuDesk configuration. Hatari 2.4.1's temporary --auto INF is
+ # not reliable for EmuTOS because EmuTOS reads its desktop INF twice.
+ return ('#R 01\r\n#E 1A E1 FF 00 00\r\n'
+         '#W 00 00 02 08 26 0C 00 @\r\n'
+         '#M 00 00 01 FF A DISK A@ @\r\n'
+         '#M 02 00 00 FF C DISK C@ @\r\n'
+         '#Z 00 C:\\'+program+'@ \r\n'
+         '#F FF 07 @ *.*@ 000 @\r\n#N FF 07 @ *.*@ 000 @\r\n'
+         '#D FF 02 @ *.*@\r\n#F 06 FF *.TOS@ @ 000 @\r\n'
+         '#T 00 03 03 FF   TRASH@ @\r\n')
 def main():
  for c in ('m68k-atari-mint-gcc','hatari'):
   if not shutil.which(c): return fail(c+' missing')
  for p in (PROFILE,ROM,SOURCE):
   if not p.is_file(): return fail('missing '+str(p))
  profile=json.loads(PROFILE.read_text()); q=profile['qualification']; OUT.mkdir(parents=True,exist_ok=True)
- probe=OUT/'M6FAL.PRG'; floppy=OUT/'m6fal-auto.st'; log=OUT/'hatari.log'
- cp=subprocess.run(['m68k-atari-mint-gcc','-m68020-60','-O2','-s',f'-DPROFILE_NAME="{profile["id"]}"','-DRESULT_FILE="A:\\\\M6FAL.TXT"','-o',str(probe),str(SOURCE)],cwd=ROOT)
+ hd=OUT/'hd'; hd.mkdir(parents=True,exist_ok=True); probe=hd/'M6FAL.TOS'; result=hd/'M6FAL.TXT'; log=OUT/'hatari.log'
+ result.unlink(missing_ok=True); (hd/'EMUDESK.INF').write_text(emudesk(probe.name),newline='')
+ cp=subprocess.run(['m68k-atari-mint-gcc','-m68020-60','-O2','-s',f'-DPROFILE_NAME="{profile["id"]}"','-DRESULT_FILE="C:\\\\M6FAL.TXT"','-o',str(probe),str(SOURCE)],cwd=ROOT)
  if cp.returncode:return fail(f'guest probe compile exit {cp.returncode}')
- build_auto_floppy(floppy,'M6FAL.PRG',probe.read_bytes())
  run_vbls=max(int(q['minimum_vbls']),5000)
- effective={'profile_id':profile['id'],'machine':'falcon','cpu_level':3,'cpu_clock_mhz':16,'st_ram_mib':4,'addressing_bits':32,'mmu':True,'run_vbls':run_vbls,'guest_program':'A:\\AUTO\\M6FAL.PRG','result_file':'A:\\M6FAL.TXT','launch':'floppy-plus-explicit-hatari-auto','floppy_write_protection':'off','startup_margin':'5000-vbl-minimum'}
+ effective={'profile_id':profile['id'],'machine':'falcon','cpu_level':3,'cpu_clock_mhz':16,'st_ram_mib':4,'addressing_bits':32,'mmu':True,'run_vbls':run_vbls,'guest_program':'C:\\M6FAL.TOS','result_file':'C:\\M6FAL.TXT','launch':'persistent-emudesk-inf-on-gemdos-boot-drive','startup_margin':'5000-vbl-minimum'}
  (OUT/'PROFILE.json').write_text(json.dumps(profile,indent=2,sort_keys=True)+'\n'); (OUT/'ROM.sha256').write_text(f'{sha256(ROM)}  {ROM.name}\n'); (OUT/'PROBE.sha256').write_text(f'{sha256(probe)}  {probe.name}\n'); (OUT/'HATARI_PROFILE.json').write_text(json.dumps(effective,indent=2,sort_keys=True)+'\n')
- cmd=['hatari','--tos',str(ROM),'--machine','falcon','--memsize','4','--cpulevel','3','--cpuclock','16','--addr24','no','--mmu','on','--compatible',yn(bool(q['compatible_mode'])),'--fast-boot',yn(bool(q['fast_boot'])),'--sound','off','--confirm-quit','no','--benchmark','--run-vbls',str(run_vbls),'--disk-a',str(floppy),'--protect-floppy','off','--auto','A:\\AUTO\\M6FAL.PRG','--log-file',str(log)]
+ cmd=['hatari','--tos',str(ROM),'--machine','falcon','--memsize','4','--cpulevel','3','--cpuclock','16','--addr24','no','--mmu','on','--compatible',yn(bool(q['compatible_mode'])),'--fast-boot',yn(bool(q['fast_boot'])),'--sound','off','--confirm-quit','no','--benchmark','--run-vbls',str(run_vbls),'--harddrive',str(hd),'--protect-hd','off','--gemdos-case','upper','--log-file',str(log)]
  command=cmd if not shutil.which('xvfb-run') else ['xvfb-run','-a',*cmd]; rc=bounded(command)
  if rc is None:return fail(f'Hatari timeout after {TIMEOUT}s')
  if rc:return fail(f'Hatari exit {rc}')
  text=log.read_text(errors='replace') if log.exists() else ''
  if FATAL.search(text):return fail('fatal marker in Hatari log')
- raw=extract_root_file(floppy,'M6FAL.TXT')
- if raw is None:return fail('guest result missing')
- f=fields_text(raw)
+ if not result.is_file():return fail('guest result missing')
+ f=fields_text(result.read_bytes())
  if f.get('schema')!='1' or f.get('profile')!=profile['id'] or f.get('status')!='PASS':return fail(f'guest verdict {f.get("status","missing")} stage={f.get("stage","unknown")}')
  try:mch=int(f['mch'],0); cpu=int(f['cpu'],0); vdo=int(f['vdo'],0); phys=int(f['physbase'],0); logbase=int(f['logbase'],0)
  except (ValueError,KeyError) as e:return fail('invalid guest field: '+str(e))
