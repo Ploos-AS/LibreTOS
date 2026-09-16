@@ -1,4 +1,4 @@
-.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2 qualify-target-matrix qualify-m3-profile build-m3-ste qualify-m3-boot qualify-m3-platform qualify-m3-enhanced qualify-m3 qualify-m4-profiles build-m4-mega qualify-m4-boot qualify-m4-platform qualify-m4 qualify-m5-profile build-m5-tt030 qualify-m5-boot qualify-m5-platform qualify-m5-enhanced qualify-m5 qualify-m6-profile build-m6-falcon030 qualify-m6-boot qualify-m6-platform qualify-m6-enhanced qualify-m6 qualify-m7-profile-schema
+.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2 qualify-target-matrix qualify-m3-profile build-m3-ste qualify-m3-boot qualify-m3-platform qualify-m3-enhanced qualify-m3 qualify-m4-profiles build-m4-mega qualify-m4-boot qualify-m4-platform qualify-m4 qualify-m5-profile build-m5-tt030 qualify-m5-boot qualify-m5-platform qualify-m5-enhanced qualify-m5 qualify-m6-profile build-m6-falcon030 qualify-m6-boot qualify-m6-platform qualify-m6-enhanced qualify-m6 qualify-m7-profile-schema qualify-m7-common
 
 help:
 	@echo "LibreTOS"
@@ -38,8 +38,9 @@ help:
 	@echo "  make qualify-m6-enhanced - run M6.4 Falcon030 enhanced interface qualification"
 	@echo "  make qualify-m6         - run aggregate M6.5 Atari Falcon030 qualification"
 	@echo "  make qualify-m7-profile-schema - validate all retained Atari profiles against the M7.1 shared contract"
+	@echo "  make qualify-m7-common  - validate M7.2 GEMDOS/AES/VDI coverage across all retained Atari targets"
 
-check: qualify-m0 qualify-m2-profile qualify-target-matrix qualify-m3-profile qualify-m4-profiles qualify-m5-profile qualify-m6-profile qualify-m7-profile-schema
+check: qualify-m0 qualify-m2-profile qualify-target-matrix qualify-m3-profile qualify-m4-profiles qualify-m5-profile qualify-m6-profile qualify-m7-profile-schema qualify-m7-common
 
 qualify-m0:
 	@python3 tools/check_m0.py
@@ -111,3 +112,5 @@ qualify-m6:
 	@python3 tools/qualify_m6.py
 qualify-m7-profile-schema:
 	@python3 tools/qualify_m7_profile_schema.py
+qualify-m7-common: qualify-m7-profile-schema qualify-target-matrix
+	@python3 tools/qualify_m7_common_regressions.py
