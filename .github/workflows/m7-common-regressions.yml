@@ -1,0 +1,19 @@
+name: M7 Common Regressions
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  common-regression-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Qualify M7.2 common GEMDOS/AES/VDI matrix
+        run: make qualify-m7-common
+      - name: Upload M7.2 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: libretos-m7-common-regression-evidence
+          path: build/m7/common-regressions/
