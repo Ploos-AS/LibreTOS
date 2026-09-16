@@ -1,0 +1,14 @@
+name: M7 Profile Schema
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Qualify M7.1 shared Atari machine-profile schema
+        run: make qualify-m7-profile-schema
