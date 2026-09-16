@@ -30,29 +30,18 @@ def fields_text(raw):
   if '=' in line:
    k,v=line.split('=',1); d[k.strip()]=v.strip()
  return d
-def emudesk(program):
- # Persistent EmuDesk configuration. Hatari 2.4.1's temporary --auto INF is
- # not reliable for EmuTOS because EmuTOS reads its desktop INF twice.
- return ('#R 01\r\n#E 1A E1 FF 00 00\r\n'
-         '#W 00 00 02 08 26 0C 00 @\r\n'
-         '#M 00 00 01 FF A DISK A@ @\r\n'
-         '#M 02 00 00 FF C DISK C@ @\r\n'
-         '#Z 00 C:\\'+program+'@ \r\n'
-         '#F FF 07 @ *.*@ 000 @\r\n#N FF 07 @ *.*@ 000 @\r\n'
-         '#D FF 02 @ *.*@\r\n#F 06 FF *.TOS@ @ 000 @\r\n'
-         '#T 00 03 03 FF   TRASH@ @\r\n')
 def main():
  for c in ('m68k-atari-mint-gcc','hatari'):
   if not shutil.which(c): return fail(c+' missing')
  for p in (PROFILE,ROM,SOURCE):
   if not p.is_file(): return fail('missing '+str(p))
  profile=json.loads(PROFILE.read_text()); q=profile['qualification']; OUT.mkdir(parents=True,exist_ok=True)
- hd=OUT/'hd'; hd.mkdir(parents=True,exist_ok=True); probe=hd/'M6FAL.TOS'; result=hd/'M6FAL.TXT'; log=OUT/'hatari.log'
- result.unlink(missing_ok=True); (hd/'EMUDESK.INF').write_text(emudesk(probe.name),newline='')
+ hd=OUT/'hd'; auto=hd/'AUTO'; auto.mkdir(parents=True,exist_ok=True); probe=auto/'M6FAL.PRG'; result=hd/'M6FAL.TXT'; log=OUT/'hatari.log'
+ result.unlink(missing_ok=True); (hd/'EMUDESK.INF').unlink(missing_ok=True)
  cp=subprocess.run(['m68k-atari-mint-gcc','-m68020-60','-O2','-s',f'-DPROFILE_NAME="{profile["id"]}"','-DRESULT_FILE="C:\\\\M6FAL.TXT"','-o',str(probe),str(SOURCE)],cwd=ROOT)
  if cp.returncode:return fail(f'guest probe compile exit {cp.returncode}')
  run_vbls=max(int(q['minimum_vbls']),5000)
- effective={'profile_id':profile['id'],'machine':'falcon','cpu_level':3,'cpu_clock_mhz':16,'st_ram_mib':4,'addressing_bits':32,'mmu':True,'run_vbls':run_vbls,'guest_program':'C:\\M6FAL.TOS','result_file':'C:\\M6FAL.TXT','launch':'persistent-emudesk-inf-on-gemdos-boot-drive','startup_margin':'5000-vbl-minimum'}
+ effective={'profile_id':profile['id'],'machine':'falcon','cpu_level':3,'cpu_clock_mhz':16,'st_ram_mib':4,'addressing_bits':32,'mmu':True,'run_vbls':run_vbls,'guest_program':'C:\\AUTO\\M6FAL.PRG','result_file':'C:\\M6FAL.TXT','launch':'gemdos-auto-observed-by-hatari','startup_margin':'5000-vbl-minimum'}
  (OUT/'PROFILE.json').write_text(json.dumps(profile,indent=2,sort_keys=True)+'\n'); (OUT/'ROM.sha256').write_text(f'{sha256(ROM)}  {ROM.name}\n'); (OUT/'PROBE.sha256').write_text(f'{sha256(probe)}  {probe.name}\n'); (OUT/'HATARI_PROFILE.json').write_text(json.dumps(effective,indent=2,sort_keys=True)+'\n')
  cmd=['hatari','--tos',str(ROM),'--machine','falcon','--memsize','4','--cpulevel','3','--cpuclock','16','--addr24','no','--mmu','on','--compatible',yn(bool(q['compatible_mode'])),'--fast-boot',yn(bool(q['fast_boot'])),'--sound','off','--confirm-quit','no','--benchmark','--run-vbls',str(run_vbls),'--harddrive',str(hd),'--protect-hd','off','--gemdos-case','upper','--log-file',str(log)]
  command=cmd if not shutil.which('xvfb-run') else ['xvfb-run','-a',*cmd]; rc=bounded(command)
