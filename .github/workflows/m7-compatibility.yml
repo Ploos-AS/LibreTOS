@@ -1,0 +1,19 @@
+name: M7 Compatibility Matrix
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Qualify M7.4 compatibility boundaries
+        run: make qualify-m7-compatibility
+      - name: Upload M7.4 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: libretos-m7-compatibility-evidence
+          path: build/m7/compatibility/
