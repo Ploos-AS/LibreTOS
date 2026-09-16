@@ -13,6 +13,7 @@ from pathlib import Path
 
 SECTOR = 512
 SECTORS = 1440
+SECTORS_PER_CLUSTER = 2
 FAT_SECTORS = 3
 ROOT_ENTRIES = 112
 ROOT_SECTORS = 7
@@ -20,6 +21,7 @@ RESERVED = 1
 FATS = 2
 DATA_START = RESERVED + FATS * FAT_SECTORS + ROOT_SECTORS
 IMAGE_SIZE = SECTOR * SECTORS
+CLUSTER_SIZE = SECTORS_PER_CLUSTER * SECTOR
 
 
 def _name83(name: str) -> bytes:
@@ -54,15 +56,18 @@ def _dirent(name: str, attr: int, cluster: int, size: int) -> bytes:
 
 
 def build_auto_floppy(path: Path, program_name: str, program: bytes) -> None:
-    """Create a 720 KiB FAT12 image containing AUTO/<program_name>."""
+    """Create an Atari GEMDOS-compatible 720 KiB FAT12 image with AUTO/<program>."""
     image = bytearray(IMAGE_SIZE)
 
-    # DOS-compatible BPB understood by Atari TOS and Hatari.
+    # Atari GEMDOS floppy BPB. Classic TOS expects two 512-byte sectors per
+    # cluster on 720 KiB media; using one sector can leave the volume unreadable
+    # to GEMDOS even though host FAT parsers accept it.
     boot = memoryview(image)[:SECTOR]
-    boot[0:3] = b'\x60\x1c\x00'  # BRA.S over BPB area on 68k; boot code is unused.
-    boot[3:11] = b'LIBRETOS'
+    boot[0:2] = b'\x60\x1c'
+    boot[2:8] = b'LIBRE '
+    boot[8:11] = b'TOS'
     struct.pack_into('<H', boot, 11, SECTOR)
-    boot[13] = 1  # sectors/cluster
+    boot[13] = SECTORS_PER_CLUSTER
     struct.pack_into('<H', boot, 14, RESERVED)
     boot[16] = FATS
     struct.pack_into('<H', boot, 17, ROOT_ENTRIES)
@@ -71,18 +76,18 @@ def build_auto_floppy(path: Path, program_name: str, program: bytes) -> None:
     struct.pack_into('<H', boot, 22, FAT_SECTORS)
     struct.pack_into('<H', boot, 24, 9)
     struct.pack_into('<H', boot, 26, 2)
-    struct.pack_into('<I', boot, 28, 0)
-    struct.pack_into('<I', boot, 32, 0)
+    struct.pack_into('<H', boot, 28, 0)
 
     fat = bytearray(FAT_SECTORS * SECTOR)
     fat[0:3] = b'\xF9\xFF\xFF'
 
     auto_cluster = 2
     _fat12_set(fat, auto_cluster, 0xFFF)
-    needed = max(1, (len(program) + SECTOR - 1) // SECTOR)
+    needed = max(1, (len(program) + CLUSTER_SIZE - 1) // CLUSTER_SIZE)
     first_program_cluster = 3
     last_program_cluster = first_program_cluster + needed - 1
-    max_cluster = SECTORS - DATA_START + 1
+    data_clusters = (SECTORS - DATA_START) // SECTORS_PER_CLUSTER
+    max_cluster = data_clusters + 1
     if last_program_cluster > max_cluster:
         raise ValueError('program does not fit on floppy')
     for cluster in range(first_program_cluster, last_program_cluster + 1):
@@ -95,15 +100,15 @@ def build_auto_floppy(path: Path, program_name: str, program: bytes) -> None:
     root_start = (RESERVED + FATS * FAT_SECTORS) * SECTOR
     image[root_start:root_start + 32] = _dirent('AUTO', 0x10, auto_cluster, 0)
 
-    auto_off = (DATA_START + auto_cluster - 2) * SECTOR
+    auto_off = (DATA_START + (auto_cluster - 2) * SECTORS_PER_CLUSTER) * SECTOR
     image[auto_off:auto_off + 32] = _dirent('.', 0x10, auto_cluster, 0)
     image[auto_off + 32:auto_off + 64] = _dirent('..', 0x10, 0, 0)
     image[auto_off + 64:auto_off + 96] = _dirent(program_name, 0x20, first_program_cluster, len(program))
 
     pos = 0
     for cluster in range(first_program_cluster, last_program_cluster + 1):
-        off = (DATA_START + cluster - 2) * SECTOR
-        chunk = program[pos:pos + SECTOR]
+        off = (DATA_START + (cluster - 2) * SECTORS_PER_CLUSTER) * SECTOR
+        chunk = program[pos:pos + CLUSTER_SIZE]
         image[off:off + len(chunk)] = chunk
         pos += len(chunk)
 
