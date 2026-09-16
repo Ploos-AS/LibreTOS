@@ -41,7 +41,12 @@ def _fat12_set(fat: bytearray, cluster: int, value: int) -> None:
 
 def _dirent(name: str, attr: int, cluster: int, size: int) -> bytes:
     ent = bytearray(32)
-    ent[:11] = _name83(name)
+    if name == '.':
+        ent[:11] = b'.          '
+    elif name == '..':
+        ent[:11] = b'..         '
+    else:
+        ent[:11] = _name83(name)
     ent[11] = attr
     struct.pack_into('<H', ent, 26, cluster)
     struct.pack_into('<I', ent, 28, size)
