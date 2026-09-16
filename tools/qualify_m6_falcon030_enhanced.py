@@ -50,11 +50,15 @@ def main():
   if not p.is_file(): return fail('missing '+str(p))
  profile=json.loads(PROFILE.read_text()); q=profile['qualification']; OUT.mkdir(parents=True,exist_ok=True)
  probe=OUT/'M6FALE.PRG'; floppy=OUT/'m6fale-auto.st'; log=OUT/'hatari.log'
- cp=subprocess.run(['m68k-atari-mint-gcc','-m68020-60','-O2','-s',f'-DPROFILE_NAME="{profile["id"]}"','-DRESULT_FILE="A:\\\\M6FALE.TXT"','-o',str(probe),str(SOURCE)],cwd=ROOT)
+ # Keep the diagnostic executable on the baseline 68000 ISA.  As with the
+ # M6.3 probe, a -m68020-60 MiNT binary can terminate in libc's CPU startup
+ # guard before main() under this EmuTOS/Falcon qualification profile.  The
+ # enhanced probe qualifies Falcon capabilities through cookies at runtime.
+ cp=subprocess.run(['m68k-atari-mint-gcc','-m68000','-O2','-s',f'-DPROFILE_NAME="{profile["id"]}"','-DRESULT_FILE="A:\\\\M6FALE.TXT"','-o',str(probe),str(SOURCE)],cwd=ROOT)
  if cp.returncode:return fail(f'guest probe compile exit {cp.returncode}')
  build_auto_floppy(floppy,'M6FALE.PRG',probe.read_bytes())
  run_vbls=max(int(q['minimum_vbls']),5000)
- effective={'profile_id':profile['id'],'machine':'falcon','cpu_level':3,'cpu_clock_mhz':16,'st_ram_mib':4,'addressing_bits':32,'mmu':True,'sound_hz':44100,'run_vbls':run_vbls,'guest_program':'A:\\AUTO\\M6FALE.PRG','result_file':'A:\\M6FALE.TXT','launch':'floppy-plus-explicit-hatari-auto','floppy_write_protection':'off','startup_margin':'5000-vbl-minimum','qualified':['VIDEL identification','Falcon sound capability discovery'],'observed':['FPU cookie'],'excluded':['DSP execution semantics','IDE read/write semantics','NVRAM persistence','external audio fidelity']}
+ effective={'profile_id':profile['id'],'machine':'falcon','cpu_level':3,'cpu_clock_mhz':16,'st_ram_mib':4,'addressing_bits':32,'mmu':True,'sound_hz':44100,'run_vbls':run_vbls,'guest_program':'A:\\AUTO\\M6FALE.PRG','guest_probe_isa':'68000','result_file':'A:\\M6FALE.TXT','launch':'floppy-plus-explicit-hatari-auto','floppy_write_protection':'off','startup_margin':'5000-vbl-minimum','qualified':['VIDEL identification','Falcon sound capability discovery'],'observed':['FPU cookie'],'excluded':['DSP execution semantics','IDE read/write semantics','NVRAM persistence','external audio fidelity']}
  (OUT/'PROFILE.json').write_text(json.dumps(profile,indent=2,sort_keys=True)+'\n'); (OUT/'ROM.sha256').write_text(f'{sha256(ROM)}  {ROM.name}\n'); (OUT/'PROBE.sha256').write_text(f'{sha256(probe)}  {probe.name}\n'); (OUT/'HATARI_PROFILE.json').write_text(json.dumps(effective,indent=2,sort_keys=True)+'\n')
  cmd=['hatari','--tos',str(ROM),'--machine','falcon','--memsize','4','--cpulevel','3','--cpuclock','16','--addr24','no','--mmu','on','--compatible',yn(bool(q['compatible_mode'])),'--fast-boot',yn(bool(q['fast_boot'])),'--sound','44100','--confirm-quit','no','--benchmark','--run-vbls',str(run_vbls),'--disk-a',str(floppy),'--protect-floppy','off','--auto','A:\\AUTO\\M6FALE.PRG','--log-file',str(log)]
  command=cmd if not shutil.which('xvfb-run') else ['xvfb-run','-a',*cmd]; rc=bounded(command)
