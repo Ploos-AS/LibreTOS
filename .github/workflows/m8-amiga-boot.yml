@@ -1,0 +1,28 @@
+name: M8 Amiga Native Boot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'config/m8-amiga-ocs-68000.json'
+      - 'src/amiga/**'
+      - 'tools/qualify_m8_amiga_profile.py'
+      - 'tools/qualify_m8_amiga_startup.py'
+      - 'tools/qualify_m8_amiga_boot.py'
+      - 'Makefile'
+      - '.github/workflows/m8-amiga-boot.yml'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Qualify M8.3 native Amiga boot contract
+        run: make qualify-m8-boot
+      - name: Upload M8.3 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: m8-amiga-boot-evidence
+          path: build/m8/boot/
