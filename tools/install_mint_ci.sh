@@ -23,5 +23,8 @@ retry sudo add-apt-repository -y ppa:vriviere/ppa
 retry sudo apt-get -o Acquire::Retries=5 update
 retry sudo apt-get -o Acquire::Retries=5 install -y cross-mint-essential hatari xvfb git make
 
-m68k-atari-mint-gcc --version | head -n 1
-hatari --version | head -n 1
+# Do not pipe version commands through head under `set -o pipefail`: programs
+# may receive SIGPIPE after head exits and make a successful install look like
+# a failed CI step.
+m68k-atari-mint-gcc --version
+hatari --version
