@@ -26,6 +26,8 @@ def main():
     text = INTERRUPT.read_text()
     required = (
         "LIBRETOS_AMIGA_CUSTOM_BASE",
+        "LIBRETOS_AMIGA_INTENAR_OFFSET",
+        "LIBRETOS_AMIGA_INTREQR_OFFSET",
         "LIBRETOS_AMIGA_INTENA_OFFSET",
         "LIBRETOS_AMIGA_INTREQ_OFFSET",
         "LIBRETOS_AMIGA_INT_SETCLR",
@@ -43,7 +45,7 @@ def main():
     for symbol in required:
         if symbol not in text:
             fail("missing contract symbol: " + symbol)
-    for value in ("0x00dff000ul", "0x009aul", "0x009cul"):
+    for value in ("0x00dff000ul", "0x001cul", "0x001eul", "0x009aul", "0x009cul"):
         if value not in text:
             fail("custom interrupt register contract drifted: " + value)
     OUT.mkdir(parents=True, exist_ok=True)
