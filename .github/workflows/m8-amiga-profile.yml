@@ -1,0 +1,19 @@
+name: M8 Amiga Native Profile
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Qualify M8.1 Amiga profile
+        run: make qualify-m8-amiga-profile
+      - name: Upload M8.1 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: libretos-m8-amiga-profile-evidence
+          path: build/m8/profile/
