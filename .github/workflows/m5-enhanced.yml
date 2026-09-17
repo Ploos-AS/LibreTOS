@@ -7,14 +7,11 @@ on:
 jobs:
   m5-enhanced:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - name: Install Atari/MiNT toolchain and Hatari
-        run: |
-          sudo add-apt-repository -y ppa:vriviere/ppa
-          sudo apt-get update
-          sudo apt-get install -y cross-mint-essential hatari xvfb git make
+        run: bash tools/install_mint_ci.sh
       - name: Qualify M5.4 Atari TT030 enhanced interfaces
         env:
           HATARI_TIMEOUT_SECONDS: 60
