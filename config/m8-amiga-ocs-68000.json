@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "id": "amiga-ocs-68000-1m",
+  "milestone": "M8.1",
+  "machine": {
+    "family": "Amiga OCS",
+    "representative_models": ["Amiga 500", "Amiga 2000"],
+    "cpu": "68000",
+    "cpu_level": 0,
+    "cpu_clock_mhz": 7,
+    "chip_ram_kib": 512,
+    "fast_ram_kib": 512,
+    "addressing_bits": 24,
+    "chipset": "OCS"
+  },
+  "boot": {
+    "mode": "native",
+    "boot_device": "floppy",
+    "kickstart_required": false
+  },
+  "rom": {
+    "source": "LibreTOS",
+    "artifact": "LibreTOS-Amiga-OCS-68000-1M.rom"
+  },
+  "platform_features": {
+    "agnus": true,
+    "denise": true,
+    "paula": true,
+    "cia": true,
+    "blitter": true,
+    "copper": true
+  },
+  "qualification": {
+    "emulator_class": "Amiga",
+    "native_68k": true,
+    "proprietary_kickstart_required": false,
+    "real_hardware_required_for_initial_gate": false
+  }
+}
