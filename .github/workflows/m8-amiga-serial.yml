@@ -1,0 +1,18 @@
+name: M8 Amiga Serial
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Qualify M8.7 serial contract
+        run: make qualify-m8-serial
+      - name: Upload qualification evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: m8-amiga-serial
+          path: build/m8/serial/
