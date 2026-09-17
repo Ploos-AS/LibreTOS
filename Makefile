@@ -1,4 +1,4 @@
-.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2 qualify-target-matrix qualify-m3-profile build-m3-ste qualify-m3-boot qualify-m3-platform qualify-m3-enhanced qualify-m3 qualify-m4-profiles build-m4-mega qualify-m4-boot qualify-m4-platform qualify-m4 qualify-m5-profile build-m5-tt030 qualify-m5-boot qualify-m5-platform qualify-m5-enhanced qualify-m5 qualify-m6-profile build-m6-falcon030 qualify-m6-boot qualify-m6-platform qualify-m6-enhanced qualify-m6 qualify-m7-profile-schema qualify-m7-common qualify-m7-bios-xbios qualify-m7-compatibility qualify-m8-amiga-profile qualify-m8-startup qualify-m8-boot qualify-m8-cia-timer qualify-m8-keyboard qualify-m8-interrupt
+.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2 qualify-target-matrix qualify-m3-profile build-m3-ste qualify-m3-boot qualify-m3-platform qualify-m3-enhanced qualify-m3 qualify-m4-profiles build-m4-mega qualify-m4-boot qualify-m4-platform qualify-m4 qualify-m5-profile build-m5-tt030 qualify-m5-boot qualify-m5-platform qualify-m5-enhanced qualify-m5 qualify-m6-profile build-m6-falcon030 qualify-m6-boot qualify-m6-platform qualify-m6-enhanced qualify-m6 qualify-m7-profile-schema qualify-m7-common qualify-m7-bios-xbios qualify-m7-compatibility qualify-m8-amiga-profile qualify-m8-startup qualify-m8-boot qualify-m8-cia-timer qualify-m8-keyboard qualify-m8-interrupt qualify-m8-serial
 
 help:
 	@echo "LibreTOS"
@@ -9,8 +9,9 @@ help:
 	@echo "  make qualify-m8-cia-timer - validate M8.4 native Amiga CIA/timer HAL contract"
 	@echo "  make qualify-m8-keyboard - validate M8.5 native Amiga keyboard HAL contract"
 	@echo "  make qualify-m8-interrupt - validate M8.6 native Amiga interrupt HAL contract"
+	@echo "  make qualify-m8-serial  - validate M8.7 native Amiga serial HAL contract"
 
-check: qualify-m0 qualify-m2-profile qualify-target-matrix qualify-m3-profile qualify-m4-profiles qualify-m5-profile qualify-m6-profile qualify-m7-profile-schema qualify-m7-common qualify-m7-bios-xbios qualify-m7-compatibility qualify-m8-amiga-profile qualify-m8-startup qualify-m8-boot qualify-m8-cia-timer qualify-m8-keyboard qualify-m8-interrupt
+check: qualify-m0 qualify-m2-profile qualify-target-matrix qualify-m3-profile qualify-m4-profiles qualify-m5-profile qualify-m6-profile qualify-m7-profile-schema qualify-m7-common qualify-m7-bios-xbios qualify-m7-compatibility qualify-m8-amiga-profile qualify-m8-startup qualify-m8-boot qualify-m8-cia-timer qualify-m8-keyboard qualify-m8-interrupt qualify-m8-serial
 
 qualify-m0:
 	@python3 tools/check_m0.py
@@ -100,3 +101,5 @@ qualify-m8-keyboard: qualify-m8-cia-timer
 	@python3 tools/qualify_m8_amiga_keyboard.py
 qualify-m8-interrupt: qualify-m8-keyboard
 	@python3 tools/qualify_m8_amiga_interrupt.py
+qualify-m8-serial: qualify-m8-interrupt
+	@python3 tools/qualify_m8_amiga_serial.py
