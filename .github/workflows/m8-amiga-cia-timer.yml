@@ -1,0 +1,18 @@
+name: M8 Amiga CIA Timer
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Qualify M8.4 CIA/timer contract
+        run: make qualify-m8-cia-timer
+      - name: Upload qualification evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: m8-amiga-cia-timer
+          path: build/m8/cia-timer/
