@@ -1,0 +1,19 @@
+name: M8 Amiga Startup HAL
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Qualify M8.2 startup/HAL contract
+        run: make qualify-m8-startup
+      - name: Upload M8.2 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: libretos-m8-amiga-startup-evidence
+          path: build/m8/startup/
