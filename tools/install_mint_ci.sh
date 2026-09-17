@@ -23,8 +23,10 @@ retry sudo add-apt-repository -y ppa:vriviere/ppa
 retry sudo apt-get -o Acquire::Retries=5 update
 retry sudo apt-get -o Acquire::Retries=5 install -y cross-mint-essential hatari xvfb git make
 
-# Do not pipe version commands through head under `set -o pipefail`: programs
-# may receive SIGPIPE after head exits and make a successful install look like
-# a failed CI step.
+# Verify the installed tools independently of their informational version
+# command exit conventions. Hatari 2.4.1 prints a valid version banner but
+# exits with status 1 for --version on the Ubuntu runner.
+command -v m68k-atari-mint-gcc >/dev/null
+command -v hatari >/dev/null
 m68k-atari-mint-gcc --version
-hatari --version
+hatari --version || true
