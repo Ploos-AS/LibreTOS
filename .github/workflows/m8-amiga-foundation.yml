@@ -1,0 +1,18 @@
+name: M8 Amiga Foundation
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Qualify M8 native Amiga foundation
+        run: make qualify-m8
+      - name: Upload qualification evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: m8-amiga-foundation
+          path: build/m8/
