@@ -103,4 +103,5 @@ qualify-m8-interrupt: qualify-m8-keyboard
 	@python3 tools/qualify_m8_amiga_interrupt.py
 qualify-m8-serial: qualify-m8-interrupt
 	@python3 tools/qualify_m8_amiga_serial.py
-qualify-m8-video: qualify-m8-serial\n\t@python3 tools/qualify_m8_amiga_video.py\n
+qualify-m8-video: qualify-m8-serial
+	@python3 tools/qualify_m8_amiga_video.py
