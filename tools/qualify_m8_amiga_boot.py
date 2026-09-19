@@ -43,6 +43,8 @@ def main() -> None:
         fail("unexpected runtime backend")
     if runtime.get("backend_level_required") != "Q3":
         fail("M8.3 requires Q3 emulator/runtime integration")
+    if runtime.get("status") != "AMIGA_RUNTIME_Q3_CORE_QUALIFIED":
+        fail("amiga-runtime Q3 core infrastructure is not qualified")
     if runtime.get("profile") != profile["id"]:
         fail("runtime profile does not match canonical profile")
     if runtime.get("proprietary_rom_required") is not False:
@@ -85,9 +87,10 @@ def main() -> None:
         "runtime_backend_level_required": runtime["backend_level_required"],
         "runtime_command": runtime["command"],
         "emulator_gate": {"class": "Amiga", "requirements": required},
+        "runtime_infrastructure": "Q3_CORE_QUALIFIED",
         "qualification_boundary": (
-            "LibreTOS handoff is defined; Ploos-AS/amiga-runtime must reach Q3 "
-            "and capture all runtime markers before M8.3 runtime PASS"
+            "LibreTOS handoff is defined and Ploos-AS/amiga-runtime Q3 core is qualified; "
+            "LibreTOS target execution must capture all runtime markers before M8.3 runtime PASS"
         ),
     }
     OUT.mkdir(parents=True, exist_ok=True)
@@ -99,10 +102,11 @@ def main() -> None:
         "profile": profile["id"],
         "gate": "boot-contract-and-runtime-handoff",
         "runtime_backend": runtime["backend"],
-        "runtime_emulator": "BLOCKED_ON_AMIGA_RUNTIME_M1_M2",
+        "runtime_infrastructure": "Q3_CORE_QUALIFIED",
+        "runtime_execution": "PENDING_LIBRETOS_TARGET_EXECUTION",
         "kickstart_required": False,
     }, indent=2) + "\n")
-    print("M8.3 boot contract/runtime handoff: PASS (amiga-runtime Q3 pending)")
+    print("M8.3 boot contract/runtime handoff: PASS (amiga-runtime Q3 core qualified; LibreTOS execution pending)")
 
 
 if __name__ == "__main__":
