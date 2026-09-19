@@ -39,14 +39,14 @@ def main():
         "gate": "native-amiga-foundation-static-contracts",
         "profile": "amiga-ocs-68000-1m",
         "stages": results,
-        "runtime": "PENDING_AMIGA_RUNTIME_Q3",
-        "runtime_status": "NOT_QUALIFIED",
+        "runtime": "AMIGA_RUNTIME_Q3_CORE_QUALIFIED",
+        "runtime_status": "INFRASTRUCTURE_QUALIFIED_TARGET_EXECUTION_PENDING",
         "proprietary_rom_required": False,
         "proprietary_os_required": False,
-        "qualification_boundary": "Static/contract foundation PASS; emulator runtime qualification requires Ploos-AS/amiga-runtime Q3.",
+        "qualification_boundary": "Static/contract foundation PASS; Ploos-AS/amiga-runtime Q3 core infrastructure is qualified with FS-UAE and Amiberry. LibreTOS target execution evidence remains required before claiming M8 runtime qualification.",
     }
     (OUT / "RESULT.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
-    print("M8 Amiga foundation: PASS (static/contracts; amiga-runtime Q3 pending)")
+    print("M8 Amiga foundation: PASS (static/contracts; amiga-runtime Q3 core available; LibreTOS execution pending)")
 
 if __name__ == "__main__":
     main()
