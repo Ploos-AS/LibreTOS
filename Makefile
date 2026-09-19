@@ -1,4 +1,4 @@
-.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2 qualify-target-matrix qualify-m3-profile build-m3-ste qualify-m3-boot qualify-m3-platform qualify-m3-enhanced qualify-m3 qualify-m4-profiles build-m4-mega qualify-m4-boot qualify-m4-platform qualify-m4 qualify-m5-profile build-m5-tt030 qualify-m5-boot qualify-m5-platform qualify-m5-enhanced qualify-m5 qualify-m6-profile build-m6-falcon030 qualify-m6-boot qualify-m6-platform qualify-m6-enhanced qualify-m6 qualify-m7-profile-schema qualify-m7-common qualify-m7-bios-xbios qualify-m7-compatibility qualify-m8-amiga-profile qualify-m8-startup qualify-m8-boot qualify-m8-cia-timer qualify-m8-keyboard qualify-m8-interrupt qualify-m8-serial qualify-m8-video qualify-m8
+.PHONY: help check qualify-m0 fetch-toolchain build-m1 qualify-m1 qualify-m2-profile qualify-m2-boot qualify-m2-gemdos qualify-m2-aes-vdi qualify-m2-media qualify-m2 qualify-target-matrix qualify-m3-profile build-m3-ste qualify-m3-boot qualify-m3-platform qualify-m3-enhanced qualify-m3 qualify-m4-profiles build-m4-mega qualify-m4-boot qualify-m4-platform qualify-m4 qualify-m5-profile build-m5-tt030 qualify-m5-boot qualify-m5-platform qualify-m5-enhanced qualify-m5 qualify-m6-profile build-m6-falcon030 qualify-m6-boot qualify-m6-platform qualify-m6-enhanced qualify-m6 qualify-m7-profile-schema qualify-m7-common qualify-m7-bios-xbios qualify-m7-compatibility qualify-m8-amiga-profile qualify-m8-startup qualify-m8-boot qualify-m8-cia-timer qualify-m8-keyboard qualify-m8-interrupt qualify-m8-serial qualify-m8-video build-m8-amiga-native qualify-m8
 
 help:
 	@echo "LibreTOS"
@@ -93,6 +93,10 @@ qualify-m8-amiga-profile:
 	@python3 tools/qualify_m8_amiga_profile.py
 qualify-m8-startup: qualify-m8-amiga-profile
 	@python3 tools/qualify_m8_amiga_startup.py
+build-m8-amiga-native:
+	@bash tools/build_m8_amiga_native.sh
+	@python3 tools/qualify_m8_native_build.py
+
 qualify-m8-boot: qualify-m8-startup
 	@python3 tools/qualify_m8_amiga_boot.py
 qualify-m8-cia-timer: qualify-m8-startup
@@ -106,5 +110,5 @@ qualify-m8-serial: qualify-m8-interrupt
 qualify-m8-video: qualify-m8-serial
 	@python3 tools/qualify_m8_amiga_video.py
 
-qualify-m8: qualify-m8-boot qualify-m8-video
+qualify-m8: qualify-m8-boot qualify-m8-video build-m8-amiga-native
 	@python3 tools/qualify_m8.py
