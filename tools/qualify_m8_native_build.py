@@ -28,4 +28,17 @@ if ssp == 0 or pc == 0:
     raise SystemExit("native image has invalid reset vectors")
 if pc & 1:
     raise SystemExit("native reset PC is not even")
+
+source = (root / "src" / "amiga" / "m8_native_boot.s").read_text()
+for marker in (
+    "cold-reset-entry-reached",
+    "vector-table-initialized",
+    "memory-discovery-completed",
+    "serial-diagnostics-active",
+    "controlled-halt-or-runtime-handoff",
+):
+    if marker not in source:
+        raise SystemExit(f"native image source is missing runtime marker: {marker}")
+if "SERDAT" not in source or "SERPER" not in source:
+    raise SystemExit("native image source is missing Paula serial diagnostics")
 print("M8 native Amiga 68000 artifact: PASS")
