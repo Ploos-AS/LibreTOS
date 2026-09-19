@@ -16,4 +16,17 @@ LDFLAGS="-nostdlib -Wl,-T,linker/m8-amiga-native.ld"
 test -s "$OUT/LibreTOS-Amiga-OCS-68000-1M.elf"
 test -s "$OUT/LibreTOS-Amiga-OCS-68000-1M.bin"
 
+python3 - "$OUT/LibreTOS-Amiga-OCS-68000-1M.bin" "$OUT/LibreTOS-Amiga-OCS-68000-1M.rom" <<'PY'
+import pathlib, sys
+src, dst = map(pathlib.Path, sys.argv[1:])
+data = src.read_bytes()
+if len(data) > 524288:
+    raise SystemExit("native image exceeds 512 KiB ROM envelope")
+rom = data + bytes(524288 - len(data))
+dst.write_bytes(rom)
+print(f"wrote {dst} ({len(rom)} bytes)")
+PY
+
+test "$(wc -c < "$OUT/LibreTOS-Amiga-OCS-68000-1M.rom")" -eq 524288
+
 printf '%s\n' "M8 native Amiga 68000 build: PASS"
