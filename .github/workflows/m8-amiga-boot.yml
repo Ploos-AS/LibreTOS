@@ -19,10 +19,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Build native Amiga 68000 artifact
+        run: make build-m8-amiga-native
       - name: Qualify M8.3 native Amiga boot contract
         run: make qualify-m8-boot
       - name: Upload M8.3 evidence
         uses: actions/upload-artifact@v4
         with:
           name: m8-amiga-boot-evidence
-          path: build/m8/boot/
+          path: |
+            build/m8/boot/
+            build/m8/native/
