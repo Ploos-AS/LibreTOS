@@ -26,11 +26,28 @@ jobs:
           path: amiga-dev
       - name: Build amiga-dev toolchain image
         run: docker build -t amiga-dev:m1 amiga-dev
+      - name: Checkout qualified amiga-runtime
+        uses: actions/checkout@v4
+        with:
+          repository: Ploos-AS/amiga-runtime
+          path: amiga-runtime
+      - name: Build amiga-runtime image
+        run: docker build -t amiga-runtime:q3 amiga-runtime
       - name: Build native Amiga 68000 artifact
         run: |
           docker run --rm -v "$PWD:/workspace" -w /workspace amiga-dev:m1 make build-m8-amiga-native
       - name: Verify native ROM envelope
         run: test "$(wc -c < build/m8/native/LibreTOS-Amiga-OCS-68000-1M.rom)" -eq 524288
+      - name: Qualify LibreTOS native ROM in FS-UAE
+        run: |
+          mkdir -p build/m8/runtime
+          docker run --rm \
+            -v "$PWD/build/m8/native:/work/input:ro" \
+            -v "$PWD/build/m8/runtime:/work/evidence" \
+            amiga-runtime:q3 \
+            test /work/input/LibreTOS-Amiga-OCS-68000-1M.rom \
+            --profile amiga-ocs-68000-1m \
+            --runtime free-native
       - name: Qualify M8.3 native Amiga boot contract
         run: make qualify-m8-boot
       - name: Upload M8.3 evidence
