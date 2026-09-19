@@ -35,7 +35,7 @@ jobs:
         run: docker build -t amiga-runtime:q3 amiga-runtime
       - name: Build native Amiga 68000 artifact
         run: |
-          docker run --rm -v "$PWD:/workspace" -w /workspace amiga-dev:m1 make build-m8-amiga-native
+          docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -v "$PWD:/workspace" -w /workspace amiga-dev:m1 make build-m8-amiga-native
       - name: Verify native ROM envelope
         run: test "$(wc -c < build/m8/native/LibreTOS-Amiga-OCS-68000-1M.rom)" -eq 524288
       - name: Qualify LibreTOS native ROM in FS-UAE
