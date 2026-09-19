@@ -19,8 +19,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Checkout qualified amiga-dev toolchain
+        uses: actions/checkout@v4
+        with:
+          repository: Ploos-AS/amiga-dev
+          path: amiga-dev
+      - name: Build amiga-dev toolchain image
+        run: docker build -t amiga-dev:m1 amiga-dev
       - name: Build native Amiga 68000 artifact
-        run: make build-m8-amiga-native
+        run: |
+          docker run --rm -v "$PWD:/workspace" -w /workspace amiga-dev:m1 make build-m8-amiga-native
       - name: Qualify M8.3 native Amiga boot contract
         run: make qualify-m8-boot
       - name: Upload M8.3 evidence
