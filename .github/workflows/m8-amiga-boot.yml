@@ -6,6 +6,10 @@ on:
     paths:
       - 'config/m8-amiga-ocs-68000.json'
       - 'src/amiga/**'
+      - 'linker/m8-amiga-native.ld'
+      - 'tools/build_m8_amiga_native.sh'
+      - 'tools/qualify_m8_native_build.py'
+      - 'config/m8-amiga-runtime.json'
       - 'tools/qualify_m8_amiga_profile.py'
       - 'tools/qualify_m8_amiga_startup.py'
       - 'tools/qualify_m8_amiga_boot.py'
