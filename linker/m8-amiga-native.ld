@@ -1,4 +1,3 @@
-OUTPUT_FORMAT("elf32-m68k")
 OUTPUT_ARCH(m68k)
 ENTRY(_start)
 
